@@ -1,102 +1,134 @@
-Project Name
+# Rest API for Raspberry Pi with MySQL-Server and Express
 This project is a REST API that connects to a MySQL database to manage persons.
+[![Build Status](https://travis-ci.org/joemccann/dillinger.svg?branch=master)](https://github.com/xMrWho/RestAPI)
 
-Table of Contents
-Installation
-Usage
-API Endpoints
-Technologies
-Contributing
-License
-Installation
+## Table of Contents
+* [Installation](#installation)
+* [API Endpoints](#APIEndpoints)
+* [Technologies](#Technologies)
+* [Contributing](#Contributing)
+* [License](#License)
+
+
+## Installation
 To run this project, you need to have Node.js and MySQL installed on your machine.
+Create a new file called "mySql.json"  in the project root directory with your MySQL configuration thatr looks kike this:
+```json
+{
+  "host": "localhost",
+  "user": "root",
+  "password": "your_password_here",
+  "database": "your_database_here"
+}
+```
 
 Clone this repository
 Navigate to the project directory in your terminal
 Install the required dependencies with npm install
-Create a mySql.json file in the project root directory with your MySQL configuration
-Run the application with npm start
-Usage
+```bash
+cd api
+npm i
+node index.js
+```
+
+## Usage
 After you've installed the project, you can use it to manage persons in the MySQL database by making requests to the API endpoints.
 
-The API endpoints can be accessed at http://localhost:3000/.
+The API endpoints can be accessed at 
+```sh 
+http://localhost:3000
+```
 
-API Endpoints
+**[⬆ Back to Index](#table-of-contents)**
+## API Endpoints
 This REST API has the following endpoints:
 
-Endpoint	Method	Description
-/persons	GET	Retrieves a list of all persons in the database
-/persons	POST	Adds a new person to the database
-/person/:id	DELETE	Deletes the person with the specified ID from the database
-/persons (GET)
-Retrieves a list of all persons in the database.
+|API | Description | Auth | HTTPS | CORS |
+|---|---|---|---|---|
+|persons|This endpoint handles requests for persons|apiKey|NO|Unknown|
 
-Request Parameters
+#### Person Endpoint:
 
-None
-
-Request Headers
-
+##### POST /persons
+###### Request Headers:
+```sh
 x-api-key: Your secret API key
-Response
+```
 
-Status Code: 200 OK
-Response Body: An array of person objects in the following format:
-json
-Copy code
+###### Request Body:
+```json
 {
-  "id": 1,
+  "action": "get_all_persons"
+}
+```
+or: 
+```json
+{
+  "action": "get_person",
+  "id": 123
+}
+```
+or
+```json
+{
+  "action": "other_request"
+}
+```
+
+###### Response:
+```json
+
+// Success - 200
+[
+  {
+    "id": 1,
+    "name": "John",
+    "age": 30
+  },
+  {
+    "id": 2,
+    "name": "Jane",
+    "age": 25
+  }
+]
+
+// Success - 200
+{
+  "id": 123,
   "name": "John",
-  "value": "Doe"
+  "age": 30
 }
-/persons (POST)
-Adds a new person to the database.
 
-Request Parameters
-
-None
-
-Request Headers
-
-x-api-key: Your secret API key
-Request Body
-
-An object containing the following fields:
-
-name (string): The name of the person
-value (string): The value of the person
-Response
-
-Status Code: 201 Created
-Response Body: An object containing the ID of the new person in the following format:
-json
-Copy code
+// Failure - 400
 {
-  "id": 1
+  "message": "Invalid request action"
 }
-/person/:id (DELETE)
-Deletes the person with the specified ID from the database.
 
-Request Parameters
+// Failure - 401
+{
+  "message": "Unauthorized"
+}
 
-id (number): The ID of the person to be deleted
-Request Headers
+// Failure - 404
+{
+  "message": "Person not found"
+}
 
-x-api-key: Your secret API key
-Response
+// Failure - 500
+{
+  "message": "Error retrieving data from database"
+}
+``` 
 
-Status Code: 204 No Content
-Technologies
+## Technologies
 This project was created using the following technologies:
 
-Node.js
-Express
-MySQL
-Contributing
+- Node.js
+- Express
+- MySQL
+
+## Contributing
 If you would like to contribute to this project, please open an issue or a pull request.
 
-License
+## License
 This project is licensed under the MIT License. See the LICENSE file for details.
-
-
-
