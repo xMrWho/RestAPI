@@ -7,29 +7,26 @@ class MySQL {
 
   connect() {
     const connection = this.connection;
-    console.log('connection', connection)
 
-
-    this.connection = connection.connect(function (err) {
+    connection.connect(function (err) {
       if (err) {
         console.error('Error connecting to MySQL database: ' + err.stack);
-        throw(err);
+        throw err;
         process.exit(5);
-      }
-      else {
-        console.log('connection2', connection)
-
-
+      } else {
         console.log(
-          'Connected to MySQL database as ID ' + this.connection
+          'Connected to MySQL database as ID ' + connection?.threadId
         );
       }
-      
     });
+    this.connection = connection;
   }
 
   query(sql, values, callback) {
-    this.connection.query(sql, values, function (error, results, fields) {
+    const connection = this.connection;
+    console.log('query', connection);
+
+    connection.query(sql, values, function (error, results, fields) {
       if (error) {
         console.error('Error executing query: ' + error);
         callback(error, null);

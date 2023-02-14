@@ -13,7 +13,6 @@ const sqlConfig = JSON.parse(fs.readFileSync(sqlConfigFile));
 const database = new MySQL(sqlConfig);
 database.connect();
 
-
 app.use(bodyParser.json());
 
 const authenticate = function (req, res, next) {
@@ -34,7 +33,7 @@ app.get('*', function callback(req, res, next) {
 app.post('/persons', authenticate, function (req, res) {
   const selectAllStatement = 'SELECT * FROM persons';
   const getStatement = 'SELECT * FROM persons WHERE id = ?';
-
+  
   switch (req.body.action) {
     case 'get_all_persons':
       database.query(selectAllStatement, function (error, results) {
