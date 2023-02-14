@@ -1,0 +1,20 @@
+# Ignore node_modules directory
+node_modules
+
+# Ignore log files
+*.log
+
+# Project
+.classpath
+.externalToolBuilders
+.idea
+.project
+.settings
+nbproject
+atlassian-ide-plugin.xml
+build.xml
+nb-configuration.xml
+*.iml
+*.ipr
+*.iws
+mySql.json
