@@ -18,3 +18,4 @@ nb-configuration.xml
 *.ipr
 *.iws
 mySql.json
+api_key.txt

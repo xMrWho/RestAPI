@@ -1,104 +1,75 @@
 const fs = require('fs');
 const path = require('path');
+const cors = require('cors');
 const express = require('express');
 const bodyParser = require('body-parser');
+const http = require('http');
+
+// const https = require('https');
+// const privateKey  = fs.readFileSync('sslcert/server.key', 'utf8');
+// const certificate = fs.readFileSync('sslcert/server.crt', 'utf8');
+
+// const credentials = {key: privateKey, cert: certificate};
+
 const MySQL = require('./MySQL.js');
 
 const app = express();
 const PORT = 3000;
-const API_KEY = 'CDexzHMp#aA3xCJSD^56&Cu@nha';
 const sqlConfigFile = path.join(__dirname, 'mySql.json');
+const apiKeyFile = path.join(__dirname, 'api_key.txt');
 
 const sqlConfig = JSON.parse(fs.readFileSync(sqlConfigFile));
+const API_KEY = fs.readFileSync(apiKeyFile).toString();
+
 const database = new MySQL(sqlConfig);
 database.connect();
 
+app.use(cors({
+  origin: '*'
+}));
 app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: false }));
+
+// Middleware to attach database manager to request object
+app.use(function(req, res, next) {
+
+  req.database = database;
+  next();
+});
 
 const authenticate = function (req, res, next) {
   const apiKey = req.headers['x-api-key'];
-  console.log('NEW REQUEST WITH API_KEY', apiKey);
-
   if (apiKey !== API_KEY) {
     return res.status(401).send('Unauthorized - Please control your API-Key');
   }
   next();
 };
 
-app.get('*', function callback(req, res, next) {
-  res.status(404);
-  res.send({ message: 'Not allowed!' });
+const routes = require('./routes');
+app.use(routes);
+
+/// catch 404 and forward to error handler
+app.use(function(req, res, next) {
+  const err = new Error('Not Found');
+  err.status = 404;
+  next(err);
 });
 
-app.post('/persons', authenticate, function (req, res) {
-  const selectAllStatement = 'SELECT * FROM persons';
-  const getStatement = 'SELECT * FROM persons WHERE id = ?';
-  
-  switch (req.body.action) {
-    case 'get_all_persons':
-      database.query(selectAllStatement, function (error, results) {
-        if (error) {
-          return res.status(500).send('Error retrieving data from database');
-        } else {
-          return res.status(200).json(results);
-        }
-      });
-      break;
-    case 'get_person': {
-      const id = req.body.id;
-      const values = [id];
-      database.query(getStatement, values, function (error, results) {
-        if (error) {
-          return res.status(500).send('Error retrieving data from database');
-        } else if (results.length === 0) {
-          return res.status(404).send('Person not found');
-        } else {
-          return res.status(200).json(results[0]);
-        }
-      });
-      break;
-    }
-    default: {
-      return res.status(400).send('Invalid request action');
-    }
-  }
+app.use(function(err, req, res, next) {
+  console.log(err.stack);
+
+  res.status(err.status || 500);
+
+  res.json({'errors': {
+    message: err.message,
+    error: err
+  }});
 });
 
-app.put('/persons/:id', authenticate, (req, res) => {
-  const id = req.params.id;
-  const { name, motherId, fatherId } = req.body;
+const httpServer = http.createServer(app);
+// const httpsServer = https.createServer(credentials, app);
 
-  const sql =
-    'UPDATE persons SET name = ?, mother_id = ?, father_id = ? WHERE id = ?';
-  const values = [name, motherId, fatherId, id];
-
-  database.query(sql, values, function (error, results) {
-    if (error) {
-      return res.status(500).send('Error updating data in database');
-    } else if (results.affectedRows === 0) {
-      return res.status(404).send('Person not found');
-    } else {
-      return res.status(200).send('Person updated successfully');
-    }
-  });
+const server = httpServer.listen(3000, function callback() {
+    console.log('Listening on port ' + server.address().port);
 });
-
-app.delete('/persons/:id', authenticate, (req, res) => {
-  const id = req.params.id;
-  const sql = 'DELETE FROM persons WHERE id = ?';
-  const values = [id];
-
-  database.query(sql, values, (error, results) => {
-    if (error) {
-      res.status(500).send('Error deleting data from database');
-    } else if (results.affectedRows === 0) {
-      res.status(404).send('Data not found');
-    } else {
-      res.status(204).send();
-    }
-  });
-});
-
-app.listen(PORT, function () {
-  console.log(`Server running on port ${PORT}`);
-});
+// httpsServer.listen(8443);
