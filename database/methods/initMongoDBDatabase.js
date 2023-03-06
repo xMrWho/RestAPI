@@ -21,7 +21,7 @@ module.exports = function initMongoDb(database) {
         db.createCollection("children"),
         db
           .collection("children")
-          .createIndexes([{ key: { rel_id: 1 } }, { key: { p_id: 1 } }]),
+          .createIndexes([{ key: { rel_id: 1 } }, { key: { person_id: 1 } }]),
 
         db.createCollection("hobbies"),
         db
@@ -38,9 +38,16 @@ module.exports = function initMongoDb(database) {
 
         db.createCollection("person_cars"),
         db
-          .collection("persons_cars")
+          .collection("person_cars")
           .createIndexes([{ key: { person_id: 1 } }, { key: { car_id: 1 } }]),
 
+        db.createCollection("jobs"),
+        db.collection("jobs").createIndexes([{ key: { id: 1 }, unique: true }]),
+
+        db.createCollection("person_jobs"),
+        db
+          .collection("person_jobs")
+          .createIndexes([{ key: { person_id: 1 } }, { key: { job_id: 1 } }]),
         db.createCollection("species"),
         db
           .collection("species")

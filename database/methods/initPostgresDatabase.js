@@ -58,12 +58,31 @@ const createTablesArray = [
       " power_hp INT);",
   },
   {
-    tableName: "persons_cars",
+    tableName: "person_cars",
     sqlStatement:
       "CREATE TABLE IF NOT EXISTS persons_cars (" +
       " person_id UUID NOT NULL REFERENCES persons(id) ON DELETE CASCADE," +
       " car_id UUID NOT NULL REFERENCES cars(id) ON DELETE CASCADE," +
       " PRIMARY KEY (person_id, car_id));",
+  },
+  {
+    tableName: "jobs",
+    sqlStatement:
+      "CREATE TABLE IF NOT EXISTS jobs (" +
+      " id UUID PRIMARY KEY DEFAULT uuid_generate_v4()," +
+      " name VARCHAR(50)," +
+      " information TEXT," +
+      " PRIMARY KEY (id)) ENGINE=InnoDB;",
+  },
+  {
+    tableName: "person_jobs",
+    sqlStatement:
+      "CREATE TABLE IF NOT EXISTS person_jobs (" +
+      " person_id UUID NOT NULL REFERENCES persons(id) ON DELETE CASCADE," +
+      " job_id UUID NOT NULL REFERENCES jobs(id) ON DELETE CASCADE," +
+      " date_of_entry DATE," +
+      " date_of_leave DATE," +
+      " PRIMARY KEY (person_id, job_id));",
   },
   {
     tableName: "species",

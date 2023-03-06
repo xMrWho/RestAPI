@@ -4,7 +4,7 @@ module.exports = function getPerson(database, usedDatabase, personId) {
   switch (usedDatabase) {
     case "MongoDB": {
       const db = database.getConnection();
-      operation = db.collection("persons").find({_id: ObjectId(personId)});
+      operation = db.collection("persons").find({id: ObjectId(personId)});
       break;
     }
     case "MySQL": {

@@ -1,4 +1,4 @@
-const ObjectID = require('mongodb').ObjectID;
+const ObjectID = require("mongodb").ObjectID;
 
 module.exports = function updatePerson(database, usedDatabase, parameters) {
   const { firstname, middlename, lastname, gender, birthday, deathday, info } =
@@ -24,7 +24,7 @@ module.exports = function updatePerson(database, usedDatabase, parameters) {
           const db = database.getConnection();
           const response = await db.collection("persons").updateOne(
             {
-              _id: ObjectId(parameters.id),
+              id: ObjectId(parameters.id),
             },
             { $set: { parameters } }
           );
@@ -35,28 +35,28 @@ module.exports = function updatePerson(database, usedDatabase, parameters) {
         }
 
         case "MySQL": {
+          const values = [
+            parameters.name,
+            parameters.middlename,
+            parameters.firstname,
+            parameters.gender,
+            parameters.birthday,
+            parameters.deathday,
+            parameters.info,
+            parameters.id || null,
+          ];
 
-            const values = [
-                parameters.name,
-                parameters.middlename,
-                parameters.firstname,
-                parameters.gender,
-                parameters.birthday,
-                parameters.deathday,
-                parameters.info,
-                parameters.id || null,
-              ];
-    
-
-            connection.query('UPDATE people SET name = ?, middlename=?, firstname = ?, gender = ?, birthday = ?, deathday = ?, infos = ? WHERE id = ?', values, function(err, results) {
-                if (err) {
-                  reject(err);
-                } else {
-                  resolve(results);
-                }
-              });
-
-
+          connection.query(
+            "UPDATE people SET name = ?, middlename=?, firstname = ?, gender = ?, birthday = ?, deathday = ?, infos = ? WHERE id = ?",
+            values,
+            function (err, results) {
+              if (err) {
+                reject(err);
+              } else {
+                resolve(results);
+              }
+            }
+          );
         }
         default: {
           resolve({ error: "Gar keinen Bock mehr" });
