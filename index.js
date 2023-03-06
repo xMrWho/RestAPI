@@ -12,25 +12,28 @@ const APIMiddleware = require("./routes/APIMiddleware");
 const Routways = require("./routes/Routways");
 
 const myDatebase = require("./database/initDatabase");
+const CONSTANTS = require("./CONSTANTS");
 
 // FILES
-const sqlConfigFile = path.join(__dirname, "mySql.json");
+
 const apiKeyFile = path.join(__dirname, "api_key.txt");
-// const privateKey  = fs.readFileSync('sslcert/server.key', 'utf8');
-// const certificate = fs.readFileSync('sslcert/server.crt', 'utf8');
+// const privateKeyHttps  = fs.readFileSync('sslcert/server.key', 'utf8');
+// const certificateHttps = fs.readFileSync('sslcert/server.crt', 'utf8');
 
 // const credentials = {key: privateKey, cert: certificate};
 
 async function initServer() {
   const app = express();
   const PORT = 3000;
-  const sqlConfig = JSON.parse(fs.readFileSync(sqlConfigFile));
+
   const API_KEY = fs.readFileSync(apiKeyFile).toString();
 
-  this.database = myDatebase("MySQL", sqlConfig);
-  const connect = await this.database.connect();
+  const databaseConfigFile = CONSTANTS.DATABASE.configFile;
+  const databaseConfig = JSON.parse(fs.readFileSync(databaseConfigFile));
+
+  this.database = myDatebase(CONSTANTS.DATABASE.usedDatabase, databaseConfig);
   if (!this.database.checkConnection) {
-    throw new Error('Database Connection failed');
+    throw new Error("Database Connection failed");
   }
 
   app.use(
@@ -43,6 +46,7 @@ async function initServer() {
 
   const apiMiddleware = new APIMiddleware({
     databaseManager: this.database,
+    usedDatabase: CONSTANTS.DATABASE.usedDatabase,
     API_KEY: API_KEY,
   });
 
