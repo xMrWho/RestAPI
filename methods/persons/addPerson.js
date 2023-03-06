@@ -27,7 +27,7 @@ module.exports = function addPerson(database, usedDatabase, parameters) {
             parameters.gender,
             parameters.birthday,
             parameters.deathday,
-            data || null,
+            parameters.info || null,
           ];
 
           const result = await database.getConnection.query(
