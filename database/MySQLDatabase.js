@@ -27,13 +27,16 @@ class MySQLDatabase {
   connect() {
     const thisInstance = this;
     return new Promise(function (resolve, reject) {
-      if (thisInstance.connection && thisInstance.connection.state !== "disconnected") {
+      if (
+        thisInstance.connection &&
+        thisInstance.connection.state !== "disconnected"
+      ) {
         return resolve(this.connection);
       }
 
       thisInstance.connection = mysql.createConnection(thisInstance.config);
 
-      thisInstance.connection.connect(function(err) {
+      thisInstance.connection.connect(function (err) {
         if (err) {
           reject(err);
         } else {
@@ -51,7 +54,10 @@ class MySQLDatabase {
   checkConnection() {
     const thisInstance = this;
     return new Promise(function (resolve, reject) {
-      if (thisInstance.connection && thisInstance.connection.state !== "disconnected") {
+      if (
+        thisInstance.connection &&
+        thisInstance.connection.state !== "disconnected"
+      ) {
         return resolve(true);
       }
 
@@ -79,7 +85,10 @@ class MySQLDatabase {
   disconnect() {
     const thisInstance = this;
     return new Promise(function (resolve, reject) {
-      if (!thisInstance.connection || thisInstance.connection.state === "disconnected") {
+      if (
+        !thisInstance.connection ||
+        thisInstance.connection.state === "disconnected"
+      ) {
         return resolve(false);
       }
 
@@ -102,9 +111,10 @@ class MySQLDatabase {
   query(query) {
     const thisInstance = this;
     return new Promise(function (resolve, reject) {
-      thisInstance.checkConnection()
+      thisInstance
+        .checkConnection()
         .then(function (isConnected) {
-          if(!isConnected) {
+          if (!isConnected) {
             reject(false);
           }
           thisInstance.connection.query(query, function (err, results, fields) {
@@ -115,7 +125,7 @@ class MySQLDatabase {
             }
           });
         })
-        .catch(function(err) {
+        .catch(function (err) {
           reject(err);
         });
     });
@@ -132,18 +142,43 @@ class MySQLDatabase {
   update(tableName, filter, update) {
     const thisInstance = this;
     return new Promise(function (resolve, reject) {
-      thisInstance.checkConnection()
-        .then(function (isConnected) {
-          if(!isConnected) {
-            reject(false);
-          }
-          const query = `UPDATE ${tableName} SET ? WHERE ?`;
-          return thisInstance.connection.query(query, [update, filter]);
-        })
+      thisInstance.checkConnection().then(function (isConnected) {
+        if (!isConnected) {
+          reject(false);
+        }
+        const query = `UPDATE ${tableName} SET ? WHERE ?`;
+        return thisInstance.connection.query(query, [update, filter]);
+      });
     });
   }
 
-  insert() {}
+  /**
+   * Inserts a new record into the specified table.
+   *
+   * @param {string} tableName - The name of the table.
+   * @param {object} data - The data to insert into the table.
+   * @returns {Promise} - A promise that resolves with the result of the insert operation.
+   */
+  insert(tableName, data) {
+    const thisInstance = this;
+    return new Promise(function (resolve, reject) {
+      thisInstance
+        .checkConnection()
+        .then(function (isConnected) {
+          if (!isConnected) {
+            reject(false);
+          }
+          const query = `INSERT INTO ${tableName} SET ?`;
+          return thisInstance.connection.query(query, data);
+        })
+        .then(function (result) {
+          resolve(result);
+        })
+        .catch(function (err) {
+          reject(err);
+        });
+    });
+  }
 
   /**
    * Deletes records from the specified table that match the provided filter.

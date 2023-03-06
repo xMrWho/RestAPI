@@ -1,10 +1,11 @@
 const { MongoClient } = require("mongodb");
 
 class MongoDBDatabase extends Database {
-  constructor(databaseUrl, databaseName) {
+  constructor(config) {
     super();
-    this.databaseUrl = databaseUrl;
-    this.databaseName = databaseName;
+    const connectionString = `mongodb://${config.username}:${config.password}@${config.host}:${config.port}/${config.database}`;
+    this.databaseUrl = connectionString;
+    this.databaseName = config.databaseName;
     this.client = null;
     this.db = null;
   }

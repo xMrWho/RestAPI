@@ -15,7 +15,6 @@ class Routways {
 
   setupRoutes() {
     const apiMiddleware = this.middleware;
-    // const dbManager = apiMiddleware.getDatabaseManager(); -- NOT USED YET
 
     const routwaysPerson = new personsRoutes(apiMiddleware);
     routwaysPerson.setupRoutes();
