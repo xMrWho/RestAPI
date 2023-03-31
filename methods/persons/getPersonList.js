@@ -1,33 +1,58 @@
-module.exports = function getPersonList(database, usedDatabase) {
-  const selectAllStatement = "SELECT * FROM persons";
-  let operation;
-  switch (usedDatabase) {
-    case "MongoDB": {
-      const db = database.getConnection();
-      operation = db.collection("persons").find({});
-      break;
-    }
-    case "MySQL": {
-      operation = database.query(selectAllStatement);
-      break;
-    }
-    default: {
-      operation = database.query(selectAllStatement);
-      break;
-    }
-  }
+const mongoOperationQuery = require("../mongoOperationQuery");
+const sqlOperationQuery = require("../sqlOperationQuery");
 
+module.exports = function getPersonList(database, usedDatabase) {
   return new Promise(async function (resolve, reject) {
-    const response = await operation;
-    if (Array.isArray(response)) {
+    try {
+      switch (usedDatabase) {
+        case "MongoDB": {
+          const params = {
+            database: database,
+            collectionName: "persons",
+            queryOperation: "find",
+            parametersToUse: {},
+            errorMessage: "Error getting person list",
+            successMessage: "Successfully got person list",
+          };
+
+          const response = await mongoOperationQuery(params);
+          if (response.error) {
+            resolve(response);
+          }
+
+          resolve({
+            data: response,
+          });
+        }
+        case "MySQL": {
+          const params = {
+            database: database,
+            collectionName: "persons",
+            queryOperation: "findAll",
+            parametersToUse: {},
+            errorMessage: "Error getting person list",
+          };
+          const response = await sqlOperationQuery(params);
+          if (Array.isArray(response)) {
+            resolve({
+              data: response,
+            });
+          }
+          resolve({
+            error: "Error retrieving data from database",
+            msg: response.message,
+            stack: response.stack,
+          });
+        }
+        default: {
+          resolve({ error: "Not implemented yet" });
+        }
+      }
+    } catch (error) {
       resolve({
-        data: response,
-      });
-    } else {
-      resolve({
-        error: "Error retrieving data from database",
-        msg: response.message,
-        stack: response.stack,
+        error: "An Error occurred while getting the person list from database",
+        msg: error.message,
+        stack: error.stack,
       });
     }
   });

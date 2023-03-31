@@ -24,10 +24,18 @@ class Routways {
     // this.router.use('/cars', this.middleware, carsRoutes);
     // this.router.use('/hobbies', this.middleware, hobbiesRoutes);
 
+    this.router.get('/', function callback(req, res, next) {
+      res.status(200);
+      res.send({ message: 'Hallo' });
+    });
+
     this.router.get('*', function callback(req, res, next) {
       res.status(404);
       res.send({ message: 'Not allowed!' });
     });
+  
+
+  
   }
 
   getRouter() {

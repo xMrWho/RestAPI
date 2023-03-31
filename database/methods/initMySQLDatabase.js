@@ -34,7 +34,7 @@ const createTablesArray = [
       " rel_id VARCHAR(36)," +
       " person_id VARCHAR(36)," +
       " FOREIGN KEY (rel_id) REFERENCES relationships(id)," +
-      " FOREIGN KEY (p_id) REFERENCES persons(id)) ENGINE = InnoDB;",
+      " FOREIGN KEY (person_id) REFERENCES persons(id)) ENGINE = InnoDB;",
   },
   {
     tableName: "hobbies",
@@ -50,10 +50,10 @@ const createTablesArray = [
       "CREATE TABLE IF NOT EXISTS person_hobbies (" +
       " id CHAR(36) NOT NULL," +
       " person_id CHAR(36) NOT NULL," +
-      " hobby_id INT NOT NULL," +
+      " hobby_id CHAR(36) NOT NULL," +
       " PRIMARY KEY (id)," +
       " FOREIGN KEY (person_id) REFERENCES persons(id) ON DELETE CASCADE," +
-      " FOREIGN KEY (hobby_id) REFERENCES hobbies(id) ON DELETE CASCADE)) ENGINE = InnoDB;",
+      " FOREIGN KEY (hobby_id) REFERENCES hobbies(id) ON DELETE CASCADE) ENGINE = InnoDB;",
   },
   {
     tableName: "cars",
@@ -111,20 +111,22 @@ const createTablesArray = [
     sqlStatement:
       "CREATE TABLE IF NOT EXISTS animals (" +
       " id CHAR(36) NOT NULL," +
-      " species_id INT UNSIGNED NOT NULL," +
+      " species_id CHAR(36) NOT NULL," +
       " name VARCHAR(50) NOT NULL," +
+      " given_name VARCHAR(50) NOT NULL," +
+      " gender ENUM('Male', 'Female', 'Other') NOT NULL," +
+      " birthdate DATE," +
+      " deathday DATE," +
       " PRIMARY KEY (id)," +
       " FOREIGN KEY (species_id) REFERENCES species(id) ON DELETE CASCADE) ENGINE=InnoDB;",
   },
   {
     tableName: "pets",
     sqlStatement:
-      "CREATE TABLE pets (" +
+      "CREATE TABLE IF NOT EXISTS pets (" +
       " id CHAR(36) NOT NULL," +
       " person_id CHAR(36) NOT NULL," +
       " animal_id CHAR(36) NOT NULL," +
-      " birthdate DATE," +
-      " deathday DATE," +
       " PRIMARY KEY (id)," +
       " FOREIGN KEY (person_id) REFERENCES persons(id) ON DELETE CASCADE," +
       " FOREIGN KEY (animal_id) REFERENCES animals(id) ON DELETE CASCADE) ENGINE=InnoDB;",
@@ -144,7 +146,7 @@ module.exports = function initMySQLDb(database) {
               stack: error.stack,
             };
           } else {
-            console.log("Table " + entry.tableName);
+            console.log("Table " + entry.tableName + " init");
             console.log(results);
             return true;
           }

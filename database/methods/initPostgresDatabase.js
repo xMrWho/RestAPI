@@ -96,6 +96,11 @@ const createTablesArray = [
     sqlStatement:
       "CREATE TABLE IF NOT EXISTS animals (" +
       " id UUID PRIMARY KEY DEFAULT uuid_generate_v4()," +
+      " name VARCHAR(50) NOT NULL," +
+      " given_name VARCHAR(50) NOT NULL," +
+      " gender TEXT NOT NULL," +
+      " birthdate DATE," +
+      " deathday DATE," +
       " species_id UUID NOT NULL REFERENCES species(id) ON DELETE CASCADE," +
       " name VARCHAR(50) NOT NULL);",
   },
@@ -105,9 +110,7 @@ const createTablesArray = [
       "CREATE TABLE IF NOT EXISTS pets (" +
       "  id UUID PRIMARY KEY," +
       "  person_id UUID NOT NULL REFERENCES persons(id) ON DELETE CASCADE," +
-      "  animal_id UUID NOT NULL REFERENCES animals(id) ON DELETE CASCADE," +
-      "  birthdate DATE," +
-      "  deathdate DATE);",
+      "  animal_id UUID NOT NULL REFERENCES animals(id) ON DELETE CASCADE);",
   },
 ];
 

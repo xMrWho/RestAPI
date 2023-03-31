@@ -29,6 +29,14 @@ module.exports = function updatePerson(database, usedDatabase, parameters) {
             { $set: { parameters } }
           );
 
+          if (response.error) {
+            resolve({
+              error: "Error retrieving data from database",
+              msg: response.error.message,
+              stack: response.error.stack,
+            });
+          }
+
           resolve({
             data: response,
           });
@@ -46,25 +54,45 @@ module.exports = function updatePerson(database, usedDatabase, parameters) {
             parameters.id || null,
           ];
 
-          connection.query(
-            "UPDATE people SET name = ?, middlename=?, firstname = ?, gender = ?, birthday = ?, deathday = ?, infos = ? WHERE id = ?",
-            values,
-            function (err, results) {
-              if (err) {
-                reject(err);
-              } else {
-                resolve(results);
+          const result = await database
+            .getConnection()
+            .query(
+              "UPDATE people SET name = ?, middlename=?, firstname = ?, gender = ?, birthday = ?, deathday = ?, infos = ? WHERE id = ?",
+              values,
+              function (error, results) {
+                if (error) {
+                  console.error(`Failed to update person: ${error.message}`);
+                  return error;
+                }
+                console.log(`updated person successfully`);
+                return results;
               }
-            }
-          );
+            );
+          if (result) {
+            resolve({
+              data: result,
+            });
+          } else {
+            resolve({
+              error: "Error retrieving data from database",
+              msg: result?.message,
+              stack: result?.stack,
+            });
+          }
         }
         default: {
-          resolve({ error: "Gar keinen Bock mehr" });
+          resolve({ error: "Not implemented yet" });
         }
       }
     } catch (error) {
-      console.error(`Failed to update person with ID ${id}: ${error.message}`);
-      throw error;
+      console.error(
+        `Failed to update person with ID ${parameters.id}: ${error.message}`
+      );
+      resolve({
+        error: `Failed to update person with ID ${parameters.id}: ${error.message}`,
+        msg: error.message,
+        stack: error.stack,
+      });
     }
   });
 };

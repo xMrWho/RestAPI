@@ -31,8 +31,9 @@ async function initServer() {
   const databaseConfigFile = CONSTANTS.DATABASE.configFile;
   const databaseConfig = JSON.parse(fs.readFileSync(databaseConfigFile));
 
-  this.database = myDatebase(CONSTANTS.DATABASE.usedDatabase, databaseConfig);
-  if (!this.database.checkConnection) {
+  this.database = await myDatebase(CONSTANTS.DATABASE.usedDatabase, databaseConfig);
+  
+  if (!this.database.checkConnection()) {
     throw new Error("Database Connection failed");
   }
 

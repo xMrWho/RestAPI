@@ -1,4 +1,5 @@
 const { Client } = require("pg");
+const Database = require('./Database');
 
 /**
  * A class representing a connection to a Postgres database.
@@ -120,10 +121,10 @@ class PostgresDatabase extends Database {
    */
   update(queryString, params) {
     const thisInstance = this;
-    return new Promise((resolve, reject) => {
-      this.getConnection()
+    return new Promise(function (resolve, reject) {
+      thisInstance.getConnection()
         .then(function (connection) {
-          connection.query(queryString, params, (error, result) => {
+          connection.query(queryString, params, function (error, result) {
             connection.release();
             if (error) {
               reject(error);
@@ -132,7 +133,7 @@ class PostgresDatabase extends Database {
             }
           });
         })
-        .catch((error) => {
+        .catch(function(error) {
           reject(error);
         });
     });

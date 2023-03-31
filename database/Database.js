@@ -1,6 +1,7 @@
 class Database {
-  constructor() {
+  constructor(config) {
     this.connection = null;
+    this.config = config;
   }
 
   /**
@@ -8,7 +9,7 @@ class Database {
    *
    * @returns {Promise<Connection>} A promise that resolves to the opened connection.
    */
-  async connect() {
+  connect() {
     return new Promise(function (resolve, reject) {
       throw new Error("Method not implemented");
     });
@@ -52,8 +53,16 @@ class Database {
    * Closes the connection with the database.
    * @returns {Promise<boolean>} A promise that resolves to a boolean indicating if the connection was successfully closed.
    */
-  async disconnect() {
-    throw new Error("Method not implemented");
+  disconnect() {
+    return new Promise(function (resolve, reject) {
+      // Get the connection
+      // ...
+
+      // If successful, resolve with the connection
+      // Otherwise, reject with the error
+      // ...
+      throw new Error("Method not implemented");
+    });
   }
 
   /**
@@ -62,7 +71,7 @@ class Database {
    * @param {string} query - The query to execute.
    * @returns {Promise<ResultSet>} A promise that resolves to the result set of the query.
    */
-  async query(queryString) {
+  query(queryString) {
     return new Promise(function (resolve, reject) {
       throw new Error("Method not implemented");
     });
@@ -73,7 +82,7 @@ class Database {
    * @param {string} query - The query to execute.
    * @returns {Promise} - A promise that resolves with the result of the update operation.
    */
-  async update(queryString) {
+  update(queryString) {
     return new Promise(function (resolve, reject) {
       throw new Error("Method not implemented");
     });

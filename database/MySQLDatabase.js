@@ -1,9 +1,10 @@
-const mysql = require("mysql");
+const mysql = require("mysql2");
+const Database = require("./Database");
 
 /**
  * Class for interacting with a MySQL database using the mysql package.
  */
-class MySQLDatabase {
+class MySQLDatabase extends Database {
   /**
    * Creates a new MySQLDatabase instance with the given configuration.
    *
@@ -15,56 +16,53 @@ class MySQLDatabase {
    * @param {number} [config.port=3306] - Port number to use for the MySQL server.
    */
   constructor(config) {
+    config.port = config.port || 3306;
+
+    super(config);
+
     this.config = config;
     this.connection = null;
+
   }
 
   /**
-   * Opens a connection to the MySQL database.
+   * Opens a connection with the database.
    *
-   * @returns {Promise<mysql.Connection>} A Promise that resolves with the connection object when the connection is successfully opened.
+   * @returns {Promise<Connection>} A promise that resolves to the opened connection.
    */
   connect() {
     const thisInstance = this;
+    const pool = mysql.createPool(this.config);
     return new Promise(function (resolve, reject) {
-      if (
-        thisInstance.connection &&
-        thisInstance.connection.state !== "disconnected"
-      ) {
-        return resolve(this.connection);
-      }
-
-      thisInstance.connection = mysql.createConnection(thisInstance.config);
-
-      thisInstance.connection.connect(function (err) {
+      pool.getConnection(function (err, connection) {
         if (err) {
           reject(err);
         } else {
-          resolve(thisInstance.connection);
+          thisInstance.connection = connection;
+          resolve({message: 'Database connected'});
         }
       });
     });
   }
 
   /**
-   * Checks if the connection to the MySQL database is open.
+   * Checks if a connection is open with the database.
    *
-   * @returns {Promise<boolean>} A Promise that resolves with true if the connection is open, or false otherwise.
+   * @returns {Promise<boolean>} A promise that resolves to a boolean indicating if the connection is open.
    */
   checkConnection() {
     const thisInstance = this;
     return new Promise(function (resolve, reject) {
       if (
         thisInstance.connection &&
-        thisInstance.connection.state !== "disconnected"
+        thisInstance.connection.authorized
       ) {
-        return resolve(true);
+        resolve(true);
+      } else {
+        resolve(false);
       }
-
-      reject(false);
     });
   }
-
   /**
    * Gets the connection with the database.
    *
@@ -73,32 +71,44 @@ class MySQLDatabase {
   getConnection() {
     const thisInstance = this;
     return new Promise(function (resolve, reject) {
-      resolve(thisInstance.connection);
+      if (
+        thisInstance.connection &&
+        thisInstance.connection.authorized
+      ) {
+        resolve(thisInstance.connection);
+      } else {
+        reject(new Error("Connection is not open"));
+      }
     });
   }
 
   /**
-   * Closes the connection to the MySQL database.
-   *
-   * @returns {Promise<boolean>} A Promise that resolves with true if the connection was successfully closed, or false otherwise.
+   * Closes the connection with the database.
+   * @returns {Promise<boolean>} A promise that resolves to a boolean indicating if the connection was successfully closed.
    */
   disconnect() {
     const thisInstance = this;
-    return new Promise(function (resolve, reject) {
-      if (
-        !thisInstance.connection ||
-        thisInstance.connection.state === "disconnected"
-      ) {
-        return resolve(false);
+    return new Promise(async function (resolve, reject) {
+      const isConnected = thisInstance.checkConnection();
+      if (!isConnected) {
+        reject(new Error("Not connected!"));
       }
 
-      thisInstance.connection.end(function (err) {
-        if (err) {
-          reject(err);
-        } else {
-          resolve(true);
-        }
-      });
+      if (
+        thisInstance.connection &&
+        thisInstance.connection.state === "authenticated"
+      ) {
+        thisInstance.connection.end(function (err) {
+          if (err) {
+            reject(err);
+          } else {
+            thisInstance.connection = null;
+            resolve(true);
+          }
+        });
+      } else {
+        resolve(false);
+      }
     });
   }
 
@@ -106,77 +116,55 @@ class MySQLDatabase {
    * Executes a query against the MySQL database and returns the result set.
    *
    * @param {string} query - The SQL query to execute.
-   * @returns {Promise<Array>} A Promise that resolves with the result set of the query.
+   * @returns {Promise<ResultSet>} A Promise that resolves with the result set of the query.
    */
   query(query) {
     const thisInstance = this;
-    return new Promise(function (resolve, reject) {
-      thisInstance
-        .checkConnection()
-        .then(function (isConnected) {
-          if (!isConnected) {
-            reject(false);
-          }
-          thisInstance.connection.query(query, function (err, results, fields) {
-            if (err) {
-              reject(err);
-            } else {
-              resolve(results);
-            }
-          });
-        })
-        .catch(function (err) {
-          reject(err);
-        });
-    });
-  }
+    return new Promise(async function (resolve, reject) {
+      const isConnected = thisInstance.checkConnection();
+      if (!isConnected) {
+        reject(new Error("Not connected!"));
+      }
 
-  /**
-   * Updates records in the specified table that match the provided filter.
-   *
-   * @param {string} tableName - The name of the table.
-   * @param {object} filter - The filter used to select the records to update.
-   * @param {object} update - The update operation to apply to the selected records.
-   * @returns {Promise} - A promise that resolves with the result of the update operation.
-   */
-  update(tableName, filter, update) {
-    const thisInstance = this;
-    return new Promise(function (resolve, reject) {
-      thisInstance.checkConnection().then(function (isConnected) {
-        if (!isConnected) {
-          reject(false);
+      const connection = await thisInstance.getConnection();
+      connection.query(query, function (err, results, fields) {
+        if (err) {
+          reject(err);
+        } else {
+          resolve({
+            results: results,
+            fields: fields,
+          });
         }
-        const query = `UPDATE ${tableName} SET ? WHERE ?`;
-        return thisInstance.connection.query(query, [update, filter]);
       });
     });
   }
 
   /**
-   * Inserts a new record into the specified table.
-   *
-   * @param {string} tableName - The name of the table.
-   * @param {object} data - The data to insert into the table.
-   * @returns {Promise} - A promise that resolves with the result of the insert operation.
+   * Updates records in the specified table that match the provided filter.
+   * @param {string} query - The query to execute.
+   * @returns {Promise} - A promise that resolves with the result of the update operation.
    */
-  insert(tableName, data) {
+  update(queryString) {
     const thisInstance = this;
-    return new Promise(function (resolve, reject) {
-      thisInstance
-        .checkConnection()
-        .then(function (isConnected) {
-          if (!isConnected) {
-            reject(false);
-          }
-          const query = `INSERT INTO ${tableName} SET ?`;
-          return thisInstance.connection.query(query, data);
-        })
-        .then(function (result) {
-          resolve(result);
-        })
-        .catch(function (err) {
+    return new Promise(async function (resolve, reject) {
+      const isConnected = thisInstance.checkConnection();
+      if (!isConnected) {
+        reject(new Error("Not connected!"));
+      }
+
+      const connection = await thisInstance.getConnection();
+
+      connection.query(queryString, function (err, results, fields) {
+        if (err) {
           reject(err);
-        });
+        } else {
+          resolve({
+            results: results,
+            fields: fields,
+          });
+        }
+      });
     });
   }
 
@@ -188,9 +176,21 @@ class MySQLDatabase {
    * @returns {Promise} - A promise that resolves with the result of the delete operation.
    */
   delete(tableName, filter) {
-    return this.connect().then(function (connection) {
-      const query = `DELETE FROM ${tableName} WHERE ?`;
-      return connection.query(query, filter);
+    const thisInstance = this;
+    return new Promise(async function (resolve, reject) {
+      const isConnected = thisInstance.checkConnection();
+      if (!isConnected) {
+        reject(new Error("Not connected!"));
+      }
+
+      thisInstance.connection
+        .query(query, filter)
+        .then(function (result) {
+          resolve(result);
+        })
+        .catch(function (err) {
+          reject(err);
+        });
     });
   }
 }

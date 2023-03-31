@@ -1,5 +1,7 @@
 const uuid = require("uuid");
-const { options } = require("../../routes/animals");
+const mongoOperationQuery = require("../mongoOperationQuery");
+const sqlOperationQuery = require("../sqlOperationQuery");
+
 // Add a new person to the database
 module.exports = function addPerson(database, usedDatabase, parameters) {
   const sqlStatement =
@@ -11,8 +13,17 @@ module.exports = function addPerson(database, usedDatabase, parameters) {
       switch (usedDatabase) {
         case "MongoDB": {
           const db = database.getConnection();
-          operation = db.collection("persons").insertOne(parameters);
-          const response = await operation;
+          const response = await db.collection("persons").insertOne(parameters);
+          
+          if(response.error) {
+            console.error(`Failed to add new person: ${response.error}`);
+            resolve({
+              error: "Error retrieving data from database",
+              msg: response.error.message,
+              stack: response.error.stack,
+            });
+          }
+
           resolve({
             data: response,
           });
@@ -36,36 +47,38 @@ module.exports = function addPerson(database, usedDatabase, parameters) {
             function (error, results, fields) {
               if (error) {
                 console.error(`Failed to add new person: ${error.message}`);
-                return error;
+                return {
+                  error: "Failed to add new person",
+                  msg: error.message,
+                  stack: error.stack,
+                };
               }
               console.log(
                 `New person added successfully with ID ${results.insertId}`
               );
-
               return results;
             }
           );
 
           if (result.insertId) {
             resolve({
-              data: response,
+              data: result,
             });
           } else {
             resolve({
               error: "Error retrieving data from database",
-              msg: response.message,
-              stack: response.stack,
+              msg: response?.message,
+              stack: response?.stack,
             });
           }
         }
         default: {
-          operation = database.query(selectStatement);
-          break;
+          resolve({ error: "Not implemented yet" });
         }
       }
     } catch (error) {
       resolve({
-        error: "Error retrieving data from database",
+        error: "An Error occurred while adding a new person",
         msg: error.message,
         stack: error.stack,
       });
