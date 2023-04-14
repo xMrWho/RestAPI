@@ -47,12 +47,15 @@ module.exports = function mySqlOperationQuery(parameters) {
       }
 
       const isConnected = await database.checkConnection();
+      console.log("Database is connected???", isConnected);
       if (!isConnected) {
         resolve({
           error: new Error("database is not connected"),
         });
       }
       const db = database.getConnection();
+
+      
       if (!db) {
         resolve({
           error: new Error(
@@ -91,6 +94,7 @@ module.exports = function mySqlOperationQuery(parameters) {
           }
         }
         case "findAll": {
+          console.log("DB TEST", db)
           const resultFindAll = await db.query(
             "SELECT * FROM??",
             [collectionName],
@@ -105,6 +109,9 @@ module.exports = function mySqlOperationQuery(parameters) {
               };
             }
           );
+
+
+
           resolve(resultFindAll);
         }
         case "find":
