@@ -1,4 +1,7 @@
-const ObjectID = require('mongodb').ObjectID,
+const ObjectID = require('mongodb').ObjectID;
+const mongoOperationQuery = require("../../methods/mongoOperationQuery");
+const sqlOperationQuery = require("../../methods/mySqlOperationQuery");
+
 
 module.exports = function deletePerson(database, usedDatabase, personId) {
   return new Promise(function (resolve, reject) {

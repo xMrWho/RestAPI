@@ -1,6 +1,6 @@
 const uuid = require("uuid");
-const mongoOperationQuery = require("../mongoOperationQuery");
-const sqlOperationQuery = require("../sqlOperationQuery");
+const mongoOperationQuery = require("../../methods/mongoOperationQuery");
+const sqlOperationQuery = require("../../methods/mySqlOperationQuery");
 
 // Add a new person to the database
 module.exports = function addPerson(database, usedDatabase, parameters) {

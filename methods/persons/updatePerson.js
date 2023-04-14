@@ -1,5 +1,9 @@
 const ObjectID = require("mongodb").ObjectID;
 
+const mongoOperationQuery = require("../../methods/mongoOperationQuery");
+const sqlOperationQuery = require("../../methods/mySqlOperationQuery");
+
+
 module.exports = function updatePerson(database, usedDatabase, parameters) {
   const { firstname, middlename, lastname, gender, birthday, deathday, info } =
     parameters;

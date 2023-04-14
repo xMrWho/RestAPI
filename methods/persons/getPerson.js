@@ -1,3 +1,6 @@
+const mongoOperationQuery = require("../../methods/mongoOperationQuery");
+const sqlOperationQuery = require("../../methods/mySqlOperationQuery");
+
 module.exports = function getPerson(database, usedDatabase, personId) {
   const selectStatement = "SELECT * FROM persons WHERE id=" + personId;
   let operation;
