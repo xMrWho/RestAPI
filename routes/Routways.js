@@ -1,11 +1,13 @@
 // Import the route handlers
-const personsRoutes = require('./persons.js');
-const animalsRoutes = require('./animals.js');
-const carsRoutes = require('./cars.js');
-const hobbiesRoutes = require('./hobbies.js');
+const personsRoutes = require("./persons.js");
+
+//PLANNED
+//const animalsRoutes = require('./animals.js');
+//const carsRoutes = require('./cars.js');
+//const hobbiesRoutes = require('./hobbies.js');
 
 // Routways.js
-const express = require('express');
+const express = require("express");
 
 class Routways {
   constructor(middleware) {
@@ -20,22 +22,21 @@ class Routways {
     routwaysPerson.setupRoutes();
     this.router.use(routwaysPerson.getRouter());
 
+    //PLANNED
     // this.router.use('/animals', this.middleware, animalsRoutes);
     // this.router.use('/cars', this.middleware, carsRoutes);
     // this.router.use('/hobbies', this.middleware, hobbiesRoutes);
+    //this.router.use('/hobbies', this.middleware, hobbiesRoutes);
 
-    this.router.get('/', function callback(req, res, next) {
+    this.router.get("/", function callback(req, res, next) {
       res.status(200);
-      res.send({ message: 'Hallo' });
+      res.send({ message: "Hallo" });
     });
 
-    this.router.get('*', function callback(req, res, next) {
+    this.router.get("*", function callback(req, res, next) {
       res.status(404);
-      res.send({ message: 'Not allowed!' });
+      res.send({ message: "Not allowed!" });
     });
-  
-
-  
   }
 
   getRouter() {
