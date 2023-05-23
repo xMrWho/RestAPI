@@ -1,10 +1,15 @@
+// NOT TESTED
+
+/** 
 const { Client } = require("pg");
 const Database = require('./Database');
+
 
 /**
  * A class representing a connection to a Postgres database.
  * @extends Database
  */
+/** 
 class PostgresDatabase extends Database {
   /**
    * Creates a new PostgresDatabase instance.
@@ -15,6 +20,7 @@ class PostgresDatabase extends Database {
    * @param {string} user - The username for the database connection.
    * @param {string} password - The password for the database connection.
    */
+  /** 
   constructor(host, port, database, user, password) {
     super();
     this.host = host;
@@ -29,6 +35,7 @@ class PostgresDatabase extends Database {
    *
    * @returns {Promise<Connection>} A promise that resolves to the opened connection.
    */
+  /** 
   connect() {
     const thisInstance = this;
     return new Promise(function (resolve, reject) {
@@ -59,6 +66,7 @@ class PostgresDatabase extends Database {
    *
    * @returns {Promise<Connection>} A promise that resolves to the connection.
    */
+  /** 
   getConnection() {
     const thisInstance = this;
     return new Promise(function (resolve, reject) {
@@ -75,6 +83,7 @@ class PostgresDatabase extends Database {
    *
    * @returns {Promise<boolean>} A promise that resolves to a boolean indicating if the connection was successfully closed.
    */
+  /** 
   disconnect() {
     const thisInstance = this;
     return new Promise(function (resolve, reject) {
@@ -100,6 +109,7 @@ class PostgresDatabase extends Database {
    * @param {string} query - The query to execute.
    * @returns {Promise<ResultSet>} A promise that resolves to the result set of the query.
    */
+  /** 
   query(queryString) {
     const thisInstance = this;
     return new Promise(function (resolve, reject) {
@@ -119,6 +129,7 @@ class PostgresDatabase extends Database {
    * @param {Array} [params] - Optional parameters to use with the query.
    * @returns {Promise} - A promise that resolves with the result of the update operation.
    */
+  /** 
   update(queryString, params) {
     const thisInstance = this;
     return new Promise(function (resolve, reject) {
@@ -145,6 +156,7 @@ class PostgresDatabase extends Database {
    * @param {Array} [params] - Optional parameters to use with the query.
    * @returns {Promise} - A promise that resolves with the result of the delete operation.
    */
+  /** 
   delete(queryString, params) {
     const thisInstance = this;
     return new Promise(function (resolve, reject) {
@@ -168,3 +180,4 @@ class PostgresDatabase extends Database {
 }
 
 module.exports = PostgresDatabase;
+ */

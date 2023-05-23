@@ -1,4 +1,6 @@
-const ObjectID = require("mongodb").ObjectID;
+//not tested
+
+/** const ObjectID = require("mongodb").ObjectID;
 
 module.exports = function mongoOperationQuery(parameters) {
   const {
@@ -193,7 +195,9 @@ module.exports = function mongoOperationQuery(parameters) {
         }
 
         case "distinctCount": {
-          const resultDistinctCount = await collection.distinctCount(parametersToUse);
+          const resultDistinctCount = await collection.distinctCount(
+            parametersToUse
+          );
           if (resultDistinctCount.error) {
             resolve(resolveOnError(resultDistinctCount.error));
           }
@@ -256,3 +260,4 @@ module.exports = function mongoOperationQuery(parameters) {
     }
   });
 };
+ */

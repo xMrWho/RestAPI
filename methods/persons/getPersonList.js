@@ -31,11 +31,17 @@ module.exports = function getPersonList(database, usedDatabase) {
             queryOperation: "findAll",
             parametersToUse: {},
             errorMessage: "Error getting person list",
+            successMessage: "Operation was successful"
           };
           const response = await sqlOperationQuery(params);
-          if (Array.isArray(response)) {
+          console.log("1234", response);
+
+
+
+
+          if (Array.isArray(response.result)) {
             resolve({
-              data: response,
+              data: responsee.result,
             });
           }
           resolve({

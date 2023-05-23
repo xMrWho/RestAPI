@@ -5,8 +5,16 @@ module.exports = function initDatabase(databaseToUse, databaseConfig) {
     "Database");
   if (databaseToUse === "MySQL" || databaseToUse === "MongoDB" || databaseToUse === "Postgres") {
     const db = new usedDatabaseClass(databaseConfig);
+    if(db.checkConnection() == true) {
+      console.log("Connected already");
+      return initDatabaseFunction(db).then(function() {
+        return db;
+      });
+    }
+
+
+
     return db.connect().then(async function (response) {
-      console.log('res', response);
       await initDatabaseFunction(db);
       return db;
     });

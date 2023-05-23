@@ -1,4 +1,8 @@
+// NOT TESTED
+
+/**
 module.exports = function initMongoDb(database) {
+
   return new Promise(async function (resolve, reject) {
     const db = database.getConnection();
 
@@ -79,3 +83,4 @@ module.exports = function initMongoDb(database) {
     }
   });
 };
+ */

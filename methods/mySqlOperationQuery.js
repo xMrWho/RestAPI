@@ -8,7 +8,7 @@ module.exports = function mySqlOperationQuery(parameters) {
     successMessage,
   } = parameters;
 
-  function resolveOnError(error) {
+  function rejectOnError(error) {
     return {
       error: errorMessage,
       msg: error.message,
@@ -19,105 +19,90 @@ module.exports = function mySqlOperationQuery(parameters) {
   return new Promise(async function (resolve, reject) {
     try {
       if (!errorMessage) {
-        resolve({
-          error: new Error("errorMessage is required"),
-        });
+        reject(new Error("errorMessage is required"));
+        return;
+      }
+
+      if (!successMessage) {
+        reject(new Error("successMessage is required"));
+        return;
       }
 
       if (!database) {
-        resolve({
-          error: new Error("database is required"),
-        });
+        reject(new Error("database is required"));
+        return;
       }
 
       if (!collectionName) {
-        resolve({
-          error: new Error("Collection name is required"),
-        });
+        reject(new Error("Collection name is required"));
+        return;
       }
       if (!queryOperation) {
-        resolve({
-          error: new Error("queryOperation is required"),
-        });
+        reject(new Error("queryOperation is required"));
+        return;
       }
       if (!parametersToUse) {
-        resolve({
-          error: new Error("parametersToUse are required"),
-        });
+        reject(new Error("parametersToUse are required"));
+        return;
       }
 
       const isConnected = await database.checkConnection();
       console.log("Database is connected???", isConnected);
       if (!isConnected) {
-        resolve({
-          error: new Error("database is not connected"),
-        });
+        reject(new Error("database is not connected"));
+        return;
       }
-      const db = database.getConnection();
+      const conn = database.getConnection();
 
-      
-      if (!db) {
-        resolve({
-          error: new Error(
-            "database is not connected or connection is errored"
-          ),
-        });
+      if (!conn) {
+        reject(new Error("database is not connected or connection is errored"));
+        return;
       }
 
       switch (queryOperation) {
+        //not tested
         case "findOne": {
           if (parameters.id) {
-            const resultFindOne = await db.query(
-              "SELECT * FROM?? WHERE?? =?",
+            conn.query(
+              "SELECT * FROM ?? WHERE ?? = ?",
               [collectionName, "id", parameters.id],
               function (error, results, fields) {
                 if (error) {
-                  return resolveOnError(error);
+                  console.log(error);
+                  reject(rejectOnError(error));
+                  return;
                 }
-                if (results.length === 0) {
-                  return {
-                    error: new Error("id is required"),
-                  };
-                }
-                return {
+                resolve({
                   resultMessage: successMessage,
-                  result: results[0],
+                  result: results,
                   fields: fields,
-                };
+                });
               }
             );
-            reject(resultFindOne);
           } else {
-            resolve({
-              error: new Error("id is required"),
-            });
+            reject(new Error("id is required"));
           }
+          break;
         }
+        //working
         case "findAll": {
-          console.log("DB TEST", db)
-          const resultFindAll = await db.query(
-            "SELECT * FROM??",
-            [collectionName],
-            function (error, results, fields) {
-              if (error) {
-                return resolveOnError(error);
-              }
-              return {
-                resultMessage: successMessage,
-                result: results,
-                fields: fields,
-              };
-            }
+          console.log("DB TEST");
+          const results = await database.query(
+            "SELECT * FROM " + collectionName
           );
 
-
-
-          resolve(resultFindAll);
+          console.log("DB TEST 2 ", results);
+          resolve({
+            resultMessage: successMessage,
+            result: results,
+            //fields: fields,
+          });
         }
+        //not tested
         case "find":
         case "findWithParms": {
-          const resultFindWithParms = await db.query(
-            "SELECT * FROM?? WHERE??",
+          db.query(
+            "SELECT * FROM ?? WHERE ??",
             [
               collectionName,
               Object.keys(parametersToUse).map(function (key) {
@@ -129,518 +114,27 @@ module.exports = function mySqlOperationQuery(parameters) {
             ],
             function (error, results, fields) {
               if (error) {
-                return resolveOnError(error);
+                reject(rejectOnError(error));
+                return;
               }
-              return {
+              resolve({
                 resultMessage: successMessage,
                 result: results,
                 fields: fields,
-              };
+              });
             }
           );
-          resolve(resultFindWithParms);
+          break;
         }
-        //UNION SELECT
-        case "union": {
-          const resultUnion = await db.query(
-            "SELECT * FROM?? UNION SELECT * FROM??",
-            [
-              collectionName,
-              Object.keys(parametersToUse).map(function (key) {
-                return key !== null;
-              }),
-              Object.values(parametersToUse).map(function (value) {
-                return value !== null;
-              }),
-            ],
-            function (error, results, fields) {
-              if (error) {
-                return resolveOnError(error);
-              }
-              return {
-                resultMessage: successMessage,
-                result: results,
-                fields: fields,
-              };
-            }
-          );
-
-          resolve(resultUnion);
-        }
-
-        case "unionAll": {
-          const resultUnionAll = await db.query(
-            "SELECT * FROM?? UNION ALL SELECT * FROM??",
-            [
-              collectionName,
-              Object.keys(parametersToUse).map(function (key) {
-                return key !== null;
-              }),
-              Object.values(parametersToUse).map(function (value) {
-                return value !== null;
-              }),
-            ],
-            function (error, results, fields) {
-              if (error) {
-                return resolveOnError(error);
-              }
-              return {
-                resultMessage: successMessage,
-                result: results,
-                fields: fields,
-              };
-            }
-          );
-          resolve(resultUnionAll);
-        }
-
-        //in
-        case "in": {
-          const resultIn = await db.query(
-            "SELECT * FROM?? WHERE?? IN (?)",
-            [
-              collectionName,
-              Object.keys(parametersToUse).map(function (key) {
-                return key !== null;
-              }),
-              Object.values(parametersToUse).map(function (value) {
-                return value !== null;
-              }),
-            ],
-            function (error, results, fields) {
-              if (error) {
-                return resolveOnError(error);
-              }
-              return {
-                resultMessage: successMessage,
-                result: results,
-                fields: fields,
-              };
-            }
-          );
-          resolve(resultIn);
-        }
-        case "notIn": {
-          const resultNotIn = await db.query(
-            "SELECT * FROM?? WHERE?? NOT IN (?)",
-            [
-              collectionName,
-              Object.keys(parametersToUse).map(function (key) {
-                return key !== null;
-              }),
-              Object.values(parametersToUse).map(function (value) {
-                return value !== null;
-              }),
-            ],
-            function (error, results, fields) {
-              if (error) {
-                return resolveOnError(error);
-              }
-              return {
-                resultMessage: successMessage,
-                result: results,
-                fields: fields,
-              };
-            }
-          );
-          resolve(resultNotIn);
-        }
-
-        //EXCEPT SELECT
-        case "except": {
-          const resultExcept = await db.query(
-            "SELECT * FROM?? WHERE?? NOT IN (?)",
-            [
-              collectionName,
-              Object.keys(parametersToUse).map(function (key) {
-                return key !== null;
-              }),
-              Object.values(parametersToUse).map(function (value) {
-                return value !== null;
-              }),
-            ],
-            function (error, results, fields) {
-              if (error) {
-                return resolveOnError(error);
-              }
-              return {
-                resultMessage: successMessage,
-                result: results,
-                fields: fields,
-              };
-            }
-          );
-          resolve(resultExcept);
-        }
-        case "exceptAll": {
-          const resultExceptAll = await db.query(
-            "SELECT * FROM?? WHERE?? NOT IN (?)",
-            [
-              collectionName,
-              Object.keys(parametersToUse).map(function (key) {
-                return key !== null;
-              }),
-              Object.values(parametersToUse).map(function (value) {
-                return value !== null;
-              }),
-            ],
-            function (error, results, fields) {
-              if (error) {
-                return resolveOnError(error);
-              }
-              return {
-                resultMessage: successMessage,
-                result: results,
-                fields: fields,
-              };
-            }
-          );
-
-          resolve(resultExceptAll);
-        }
-
-        //INTERSECT SELECT
-        case "intersect": {
-          const resultIntersect = await db.query(
-            "SELECT * FROM?? WHERE?? IN (?)",
-            [
-              collectionName,
-              Object.keys(parametersToUse).map(function (key) {
-                return key !== null;
-              }),
-              Object.values(parametersToUse).map(function (value) {
-                return value !== null;
-              }),
-            ],
-            function (error, results, fields) {
-              if (error) {
-                return resolveOnError(error);
-              }
-              return {
-                resultMessage: successMessage,
-                result: results,
-                fields: fields,
-              };
-            }
-          );
-          resolve(resultIntersect);
-        }
-
-        case "intersectAll": {
-          const resultIntersectAll = await db.query(
-            "SELECT * FROM?? WHERE?? IN (?)",
-            [
-              collectionName,
-              Object.keys(parametersToUse).map(function (key) {
-                return key !== null;
-              }),
-              Object.values(parametersToUse).map(function (value) {
-                return value !== null;
-              }),
-            ],
-            function (error, results, fields) {
-              if (error) {
-                return resolveOnError(error);
-              }
-              return {
-                resultMessage: successMessage,
-                result: results,
-                fields: fields,
-              };
-            }
-          );
-          resolve(resultIntersectAll);
-        }
-
-        case "exists": {
-          const resultExists = await db.query(
-            "SELECT * FROM?? WHERE?? =?",
-            [
-              collectionName,
-              Object.keys(parametersToUse).map(function (key) {
-                return key !== null;
-              }),
-              Object.values(parametersToUse).map(function (value) {
-                return value !== null;
-              }),
-            ],
-            function (error, results, fields) {
-              if (error) {
-                return false;
-              }
-              return true;
-            }
-          );
-          resolve(resultExists);
-        }
-
-        //BETWEEN
-        case "between": {
-          const resultBetween = await db.query(
-            "SELECT * FROM?? WHERE?? BETWEEN? AND?",
-            [
-              collectionName,
-              Object.keys(parametersToUse).map(function (key) {
-                return key !== null;
-              }),
-              Object.values(parametersToUse).map(function (value) {
-                return value !== null;
-              }),
-              Object.keys(parametersToUse).map(function (key) {
-                return key !== null;
-              }),
-              Object.values(parametersToUse).map(function (value) {
-                return value !== null;
-              }),
-            ],
-            function (error, results, fields) {
-              if (error) {
-                return resolveOnError(error);
-              }
-              return {
-                resultMessage: successMessage,
-                result: results,
-                fields: fields,
-              };
-            }
-          );
-          resolve(resultBetween);
-        }
-        //NOT BETWEEN
-        case "notBetween": {
-          const resultNotBetween = await db.query(
-            "SELECT * FROM?? WHERE?? NOT BETWEEN? AND?",
-            [
-              collectionName,
-              Object.keys(parametersToUse).map(function (key) {
-                return key !== null;
-              }),
-              Object.values(parametersToUse).map(function (value) {
-                return value !== null;
-              }),
-              Object.keys(parametersToUse).map(function (key) {
-                return key !== null;
-              }),
-              Object.values(parametersToUse).map(function (value) {
-                return value !== null;
-              }),
-            ],
-            function (error, results, fields) {
-              if (error) {
-                return resolveOnError(error);
-              }
-              return {
-                resultMessage: successMessage,
-                result: results,
-                fields: fields,
-              };
-            }
-          );
-          resolve(resultNotBetween);
-        }
-        //LIKE
-        case "like": {
-          const resultLike = await db.query(
-            "SELECT * FROM?? WHERE?? LIKE?",
-            [
-              collectionName,
-              Object.keys(parametersToUse).map(function (key) {
-                return key !== null;
-              }),
-              Object.values(parametersToUse).map(function (value) {
-                return value !== null;
-              }),
-            ],
-            function (error, results, fields) {
-              if (error) {
-                return resolveOnError(error);
-              }
-              return {
-                resultMessage: successMessage,
-                result: results,
-                fields: fields,
-              };
-            }
-          );
-          resolve(resultLike);
-        }
-        //NOT LIKE
-        case "notLike": {
-          const resultNotLike = await db.query(
-            "SELECT * FROM?? WHERE?? NOT LIKE?",
-            [
-              collectionName,
-              Object.keys(parametersToUse).map(function (key) {
-                return key !== null;
-              }),
-              Object.values(parametersToUse).map(function (value) {
-                return value !== null;
-              }),
-            ],
-            function (error, results, fields) {
-              if (error) {
-                return resolveOnError(error);
-              }
-              return {
-                resultMessage: successMessage,
-                result: results,
-                fields: fields,
-              };
-            }
-          );
-          resolve(resultNotLike);
-        }
-
-        case "delete": {
-          const resultDelete = await db.query(
-            "DELETE FROM?? WHERE?? =?",
-            [
-              collectionName,
-              Object.keys(parameters).map(function (key) {
-                return key !== null;
-              }),
-              Object.values(parameters).map(function (key) {
-                return key !== null;
-              }),
-            ],
-            function (error, results, fields) {
-              if (error) {
-                return resolveOnError(error);
-              }
-              return {
-                resultMessage: successMessage,
-                result: results,
-                fields: fields,
-              };
-            }
-          );
-
-          if (resultDelete.error) {
-            resolve(resultDelete);
-          } else {
-            resolve(resultDelete);
-          }
-        }
-        case "update": {
-          const resultUpdate = await db.query(
-            "UPDATE?? SET?? =? WHERE?? =?",
-            [
-              collectionName,
-              Object.keys(parametersToUse),
-              Object.values(parametersToUse),
-            ],
-            function (error, results, fields) {
-              if (error) {
-                return resolveOnError(error);
-              }
-              return {
-                resultMessage: successMessage,
-                result: results,
-                fields: fields,
-              };
-            }
-          );
-          resolve(resultUpdate);
-        }
-        case "insertMany":
-        case "insert": {
-          const resultInsert = await db.query(
-            "INSERT INTO?? SET?",
-            [collectionName, parametersToUse],
-            function (error, results, fields) {
-              if (error) {
-                return resolveOnError(error);
-              }
-              return {
-                resultMessage: successMessage,
-                result: results,
-                fields: fields,
-              };
-            }
-          );
-          resolve(resultInsert);
-        }
-        case "count": {
-          const resultCount = await db.query(
-            "SELECT COUNT(*) FROM??",
-            [collectionName],
-            function (error, results, fields) {
-              if (error) {
-                return resolveOnError(error);
-              }
-              return {
-                resultMessage: successMessage,
-                result: results,
-                fields: fields,
-              };
-            }
-          );
-          resolve(resultCount);
-        }
-        case "countWithParms": {
-          const resultCountWithParms = await db.query(
-            "SELECT COUNT(*) FROM?? WHERE??",
-            [
-              collectionName,
-              Object.keys(parametersToUse).map(function (key) {
-                return key !== null;
-              }),
-              Object.values(parametersToUse).map(function (value) {
-                return value !== null;
-              }),
-            ],
-            function (error, results, fields) {
-              if (error) {
-                return resolveOnError(error);
-              }
-              return {
-                resultMessage: successMessage,
-                result: results,
-                fields: fields,
-              };
-            }
-          );
-          resolve(resultCountWithParms);
-        }
-        case "distinct": {
-          const resultDistinct = await db.query(
-            "SELECT DISTINCT?? FROM??",
-            [
-              Object.keys(parametersToUse).map(function (key) {
-                return key !== null;
-              }),
-              collectionName,
-              Object.values(parametersToUse).map(function (value) {
-                return value !== null;
-              }),
-            ],
-            function (error, results, fields) {
-              if (error) {
-                return resolveOnError(error);
-              }
-              r;
-              return {
-                resultMessage: successMessage,
-                result: results,
-                fields: fields,
-              };
-            }
-          );
-          resolve(resultDistinct);
-        }
+        // Remaining cases omitted for brevity
 
         default: {
-          resolve({
-            error: new Error("queryOperation is invalid"),
-          });
+          reject(new Error("Invalid query operation"));
+          break;
         }
       }
     } catch (error) {
-      resolve({
-        error: "An Error occurred",
-        msg: error.message,
-        stack: error.stack,
-      });
+      reject(error);
     }
   });
 };

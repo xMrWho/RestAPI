@@ -1,3 +1,6 @@
+//not tested
+
+/** 
 // Create table statements
 const createTablesArray = [
   // personsTable
@@ -142,3 +145,4 @@ module.exports = function initPostGresDb(database) {
     resolve(true);
   });
 };
+*/
