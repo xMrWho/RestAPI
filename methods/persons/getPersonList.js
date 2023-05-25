@@ -5,6 +5,7 @@ module.exports = function getPersonList(database, usedDatabase) {
   return new Promise(async function (resolve, reject) {
     try {
       switch (usedDatabase) {
+        //not tested
         case "MongoDB": {
           const params = {
             database: database,
@@ -24,6 +25,7 @@ module.exports = function getPersonList(database, usedDatabase) {
             data: response,
           });
         }
+        //working
         case "MySQL": {
           const params = {
             database: database,
@@ -34,14 +36,10 @@ module.exports = function getPersonList(database, usedDatabase) {
             successMessage: "Operation was successful"
           };
           const response = await sqlOperationQuery(params);
-          console.log("1234", response);
-
-
-
 
           if (Array.isArray(response.result)) {
             resolve({
-              data: responsee.result,
+              data: response.result,
             });
           }
           resolve({

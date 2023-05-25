@@ -12,8 +12,6 @@ module.exports = function initDatabase(databaseToUse, databaseConfig) {
       });
     }
 
-
-
     return db.connect().then(async function (response) {
       await initDatabaseFunction(db);
       return db;

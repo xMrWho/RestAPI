@@ -7,6 +7,10 @@ class PersonRouter {
     this.middleware = middleware;
   }
 
+  getRouter() {
+    return this.router;
+  }
+
   setupRoutes() {
     const middleware = this.middleware;
     const dbManager = middleware.getDatabaseManager();
@@ -22,7 +26,7 @@ class PersonRouter {
       });
     });
 
-    this.router.put("/persons/:id", function (req, res) {
+    /**  this.router.put("/persons/:id", function (req, res) {
       middleware.execute();
 
       const id = req.params.id;
@@ -58,11 +62,7 @@ class PersonRouter {
           res.status(204).send();
         }
       });
-    });
-  }
-
-  getRouter() {
-    return this.router;
+    });*/
   }
 }
 

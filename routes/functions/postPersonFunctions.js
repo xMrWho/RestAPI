@@ -1,60 +1,81 @@
 module.exports = async function postPersonFunctions(options) {
-  const { req, res, next, dbManager, usedDatabase } = options;
-
   const getPersonList = require("../../methods/persons/getPersonList.js");
   const getPerson = require("../../methods/persons/getPerson.js");
   const addPerson = require("../../methods/persons/addPerson.js");
   const updatePerson = require("../../methods/persons/updatePerson.js");
+  const deletePerson = require("../../methods/persons/deletePerson.js");
 
+  const { req, res, next, dbManager, usedDatabase } = options;
   try {
     switch (req.body.action) {
-      case "get_all_persons": {
-        const personList = await getPersonList(dbManager, usedDatabase);
-        return res.status(200).send(personList);
+      //WORKING
+      case "get_all": {
+        const getAllResponse = await getPersonList(dbManager, usedDatabase);
+        return res.status(200).send(getAllResponse);
       }
 
-      case "get_person": {
-        const id = req?.body?.id;
+      //WORKING
+      case "get": {
+        const id = req?.body?.params?.id;
         if (id === undefined) {
           return res
             .status(400)
-            .send("Invalid request action missing parameter body.id");
+            .send("Invalid request action missing parameter: params.id");
         }
 
-        const person_res = await getPerson(dbManager, usedDatabase, id);
-        return res.status(200).send(person_res);
+        const getResponse = await getPerson(dbManager, usedDatabase, id);
+        return res.status(200).send(getResponse);
       }
 
-      case "add_person": {
+      //WIP
+      case "add": {
+        console.log("here addPerson", req?.body);
+        console.log(req?.body?.params);
+
         // Check if the required parameters are present in the request body
-        const requiredParams = ["name", "firstname", "birthday", "gender", ""];
-        const missingParams = requiredParams.filter(
-          (param) => req?.body?.[param] === undefined
-        );
-        if (missingParams.length > 0) {
-          return res.status(400).send(`Missing parameters: ${missingParams.join(", ")}`);
+        if (!req.body.params) {
+          return res
+            .status(400)
+            .send("Invalid request action missing Missing parameters: params");
+        }
+
+        if (!req.body.params.name) {
+          return res
+            .status(400)
+            .send(
+              "Invalid request action missing Missing parameters: params.name"
+            );
+        }
+
+        if (!req.body.params.firstname) {
+          return res
+            .status(400)
+            .send(
+              "Invalid request action missing Missing parameters: params.firstname"
+            );
         }
 
         // Call a method to add the person to the database
-
-        const addedPerson = await addPerson(dbManager, usedDatabase, {
-          ...req.body
-          // You could also include any other optional parameters here if desired
+        const addResponse = await addPerson(dbManager, usedDatabase, {
+          ...req.body.params,
         });
 
-        return res.status(200).send(addedPerson);
+        return res.status(200).send(addResponse);
       }
 
-      case "update_person": {
-        const id = req?.body?.id;
+      //NEXT STEP
+      case "update": {
+        const id = req?.body?.params?.id;
         if (id === undefined) {
           return res
             .status(400)
-            .send("Invalid request action missing parameter body.id");
+            .send("Invalid request action missing parameter body.params.id");
         }
 
         // Check if at least one parameter is being updated
-        const updatedParams = Object.keys(req.body).filter(function (param) {
+        const updatedParams = Object.keys(req.body.params).filter(function (
+          param
+        ) {
           return param !== "id";
         });
 
@@ -63,20 +84,36 @@ module.exports = async function postPersonFunctions(options) {
         }
 
         // Call a method to update the person in the database
-        const updatedPerson = await updatePerson(dbManager, usedDatabase, {
-          id,
-          ...req.body,
+        const updateResponse = await updatePerson(dbManager, usedDatabase, {
+          ...req.body.params,
         });
 
-        return res.status(200).send(updatedPerson);
+        return res.status(200).send(updateResponse);
+      }
+
+      //NEXT STEP
+      case "delete": {
+        const id = req?.body?.params?.id;
+        if (id === undefined) {
+          return res
+            .status(400)
+            .send("Invalid request action missing parameter body.params.id");
+        }
+        // Call a method to update the person in the database
+        const deleteResponse = await deletePerson(dbManager, usedDatabase, {
+          ...req.body.params,
+        });
+
+        return res.status(200).send(deleteResponse);
       }
 
       default: {
-      return res.status(400).send("Invalid request action");
+        return res.status(400).send("Invalid request action");
+      }
     }
-  }}
-  catch (err) {
-  // Handle any errors that occur during the request
-  next(err);
-}
+  } catch (err) {
+    console.log("Cathc case with error", err)
+    // Handle any errors that occur during the request
+    next(err);
+  }
 };

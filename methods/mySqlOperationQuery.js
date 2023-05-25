@@ -47,38 +47,28 @@ module.exports = function mySqlOperationQuery(parameters) {
       }
 
       const isConnected = await database.checkConnection();
-      console.log("Database is connected???", isConnected);
       if (!isConnected) {
         reject(new Error("database is not connected"));
         return;
       }
-      const conn = database.getConnection();
-
-      if (!conn) {
+      const connection = database.getConnection();
+      if (!connection) {
         reject(new Error("database is not connected or connection is errored"));
         return;
       }
 
       switch (queryOperation) {
-        //not tested
+        //working
         case "findOne": {
-          if (parameters.id) {
-            conn.query(
+          if (parametersToUse.id) {
+            const resultsFindOne = await database.queryWithValues(
               "SELECT * FROM ?? WHERE ?? = ?",
-              [collectionName, "id", parameters.id],
-              function (error, results, fields) {
-                if (error) {
-                  console.log(error);
-                  reject(rejectOnError(error));
-                  return;
-                }
-                resolve({
-                  resultMessage: successMessage,
-                  result: results,
-                  fields: fields,
-                });
-              }
+              [collectionName, "id", parameters.id]
             );
+            resolve({
+              resultMessage: successMessage,
+              result: resultsFindOne,
+            });
           } else {
             reject(new Error("id is required"));
           }
@@ -86,31 +76,27 @@ module.exports = function mySqlOperationQuery(parameters) {
         }
         //working
         case "findAll": {
-          console.log("DB TEST");
-          const results = await database.query(
+          const resultsFindAll = await database.query(
             "SELECT * FROM " + collectionName
           );
 
-          console.log("DB TEST 2 ", results);
           resolve({
             resultMessage: successMessage,
-            result: results,
-            //fields: fields,
+            result: resultsFindAll,
           });
         }
         //not tested
         case "find":
         case "findWithParms": {
-          db.query(
+          //const sqlStatementFindWithParams = "SELECT * FROM ?? WHERE ??";
+          //await connection.query()
+
+          conn.query(
             "SELECT * FROM ?? WHERE ??",
             [
               collectionName,
-              Object.keys(parametersToUse).map(function (key) {
-                return key !== null;
-              }),
-              Object.values(parametersToUse).map(function (value) {
-                return value !== null;
-              }),
+              Object.keys(parametersToUse),
+              Object.values(parametersToUse),
             ],
             function (error, results, fields) {
               if (error) {
@@ -124,8 +110,34 @@ module.exports = function mySqlOperationQuery(parameters) {
               });
             }
           );
-          break;
         }
+
+        case "insert": {
+          const results = await conn.query(
+            "INSERT INTO ?? SET ?",
+            [collectionName, parametersToUse],
+            function (error, results, fields) {
+              if (error) {
+                reject(rejectOnError(error));
+                return;
+              }
+              resolve({
+                resultMessage: successMessage,
+                result: results,
+                fields: fields,
+              });
+            }
+          );
+
+          console.log("results", results);
+
+          resolve({
+            resultMessage: successMessage,
+            result: results,
+            //fields: fields,
+          });
+        }
+
         // Remaining cases omitted for brevity
 
         default: {

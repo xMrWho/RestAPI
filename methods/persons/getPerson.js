@@ -2,56 +2,54 @@ const mongoOperationQuery = require("../../methods/mongoOperationQuery");
 const sqlOperationQuery = require("../../methods/mySqlOperationQuery");
 
 module.exports = function getPerson(database, usedDatabase, personId) {
-  const selectStatement = "SELECT * FROM persons WHERE id=" + personId;
-  let operation;
-
   return new Promise(async function (resolve, reject) {
     try {
       switch (usedDatabase) {
+        //not tested
         case "MongoDB": {
-          const db = database.getConnection();
-          const result = await db
-            .collection("persons")
-            .find({ id: ObjectId(personId) });
+          const params = {
+            database: database,
+            collectionName: "persons",
+            queryOperation: "findOne",
+            parametersToUse: { id: personId },
+            errorMessage: "Error getting person with id " + personId,
+            successMessage: "Successfully got person list",
+          };
 
-          if (result.error) {
-            resolve({
-              error: "Error retrieving data from database",
-              msg: result.message,
-              stack: result.stack,
-            });
+          const response = await mongoOperationQuery(params);
+          if (response.error) {
+            resolve(response);
           }
-          
+
           resolve({
-            data: result,
+            data: response,
           });
-          break;
         }
         case "MySQL": {
-          operation = database.query(selectStatement);
-          break;
+          //working
+          const params = {
+            database: database,
+            collectionName: "persons",
+            queryOperation: "findOne",
+            parametersToUse: { id: personId },
+            errorMessage: "Error getting person with id " + personId,
+            successMessage: "Successfully got person list",
+          };
+
+          const response = await sqlOperationQuery(params);
+          resolve({
+            data: response.result,
+          });
         }
         default: {
           resolve({ error: "Not implemented yet" });
         }
       }
-      const response = await operation;
-      if (Array.isArray(response)) {
-        resolve({
-          data: response,
-        });
-      } else {
-        resolve({
-          error: "Error retrieving data from database",
-          msg: response.message,
-          stack: response.stack,
-        });
-      }
     } catch (error) {
       resolve({
         error: "An Error occurred",
-        msg: response.message,
-        stack: response.stack,
+        msg: error.message,
+        stack: error.stack,
       });
     }
   });

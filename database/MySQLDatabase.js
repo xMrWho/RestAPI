@@ -1,18 +1,18 @@
 //const mysql = require("mysql2/promise");
 const Database = require("./Database");
 
-const mysql = require('mysql2');
+const mysql = require("mysql2");
 
 class MySQLDatabase extends Database {
   constructor(config) {
     super(config);
-    this.pool = mysql.createPool(this.config);
   }
 
   connect() {
     const self = this;
 
     return new Promise(function (resolve, reject) {
+      self.pool = mysql.createPool(self.config);
       resolve();
     });
   }
@@ -38,7 +38,7 @@ class MySQLDatabase extends Database {
           }
         });
       } else {
-        reject(new Error('No connection available'));
+        reject(new Error("No connection available"));
       }
     });
   }
@@ -66,9 +66,32 @@ class MySQLDatabase extends Database {
     const self = this;
 
     return new Promise(function (resolve, reject) {
-      self.getConnection()
+      self
+        .getConnection()
         .then(function (connection) {
           connection.query(queryString, function (err, results) {
+            connection.release(); // Release the connection back to the pool
+            if (err) {
+              reject(err);
+            } else {
+              resolve(results);
+            }
+          });
+        })
+        .catch(function (err) {
+          reject(err);
+        });
+    });
+  }
+
+  queryWithValues(queryString, values) {
+    const self = this;
+
+    return new Promise(function (resolve, reject) {
+      self
+        .getConnection()
+        .then(function (connection) {
+          connection.query(queryString, values, function (err, results) {
             connection.release(); // Release the connection back to the pool
             if (err) {
               reject(err);

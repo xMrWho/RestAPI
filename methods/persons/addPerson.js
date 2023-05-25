@@ -1,6 +1,7 @@
 const uuid = require("uuid");
 const mongoOperationQuery = require("../../methods/mongoOperationQuery");
 const sqlOperationQuery = require("../../methods/mySqlOperationQuery");
+const getPerson = require("./getPerson");
 
 // Add a new person to the database
 module.exports = function addPerson(database, usedDatabase, parameters) {
@@ -10,12 +11,48 @@ module.exports = function addPerson(database, usedDatabase, parameters) {
 
   return new Promise(async function (resolve, reject) {
     try {
+      const generatedUUID = uuid.v4();
+      console.log("Generated id: ", generatedUUID);
+
+      const params = {
+        database: database,
+        collectionName: "persons",
+        queryOperation: "insert",
+        parametersToUse: {
+          id: generatedUUID,
+          name: parameters?.name,
+          middlename: parameters?.middlename,
+          firstname: parameters?.firstname,
+          gender: parameters?.gender,
+          birthday: parameters?.birthday,
+          deathday: parameters?.deathday,
+          info: parameters?.info,
+        },
+        errorMessage: "Error inserting the new person",
+        successMessage: "Operation was successful",
+      };
+
+
+      async function personExists(usedId) {
+        const personExists = await getPerson(
+          database,
+          usedDatabase,
+          usedId
+        );
+        console.log("personExists?", personExists);
+      }
+
       switch (usedDatabase) {
+        //not tested
         case "MongoDB": {
-          const db = database.getConnection();
-          const response = await db.collection("persons").insertOne(parameters);
-          
-          if(response.error) {
+          const objectId = new ObjectId();
+          personExists(objectId);
+
+          parameters.parametersToUse.id = objectId;
+          const response = await mongoOperationQuery(params);
+          //const response = await db.collection("persons").insertOne(parameters);
+
+          if (response.error) {
             console.error(`Failed to add new person: ${response.error}`);
             resolve({
               error: "Error retrieving data from database",
@@ -29,19 +66,15 @@ module.exports = function addPerson(database, usedDatabase, parameters) {
           });
         }
         case "MySQL": {
-          // You could also generate a random UUID here instead of null if desired
-          const values = [
-            (id = uuid.v4()),
-            parameters.name,
-            parameters.middlename,
-            parameters.firstname,
-            parameters.gender,
-            parameters.birthday,
-            parameters.deathday,
-            parameters.info || null,
-          ];
+          const existsPerson = await personExists(generatedUUID);
+          console.log("existsPerson?", existsPerson);
+          const response = await sqlOperationQuery(params);
+          
+          
 
-          const result = await database.getConnection.query(
+
+          /**           
+           * const result = await database.getConnection.query(
             sql,
             values,
             function (error, results, fields) {
@@ -59,7 +92,7 @@ module.exports = function addPerson(database, usedDatabase, parameters) {
               return results;
             }
           );
-
+ */
           if (result.insertId) {
             resolve({
               data: result,
