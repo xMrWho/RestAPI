@@ -13,7 +13,7 @@ class MySQLDatabase extends Database {
 
     return new Promise(function (resolve, reject) {
       self.pool = mysql.createPool(self.config);
-      resolve();
+      resolve(self);
     });
   }
 
@@ -32,13 +32,13 @@ class MySQLDatabase extends Database {
       if (self.pool && !self.pool._closed) {
         self.pool.getConnection(function (err, connection) {
           if (err) {
-            reject(err);
+            resolve(err);
           } else {
             resolve(connection);
           }
         });
       } else {
-        reject(new Error("No connection available"));
+        resolve(new Error("No connection available"));
       }
     });
   }
@@ -72,14 +72,14 @@ class MySQLDatabase extends Database {
           connection.query(queryString, function (err, results) {
             connection.release(); // Release the connection back to the pool
             if (err) {
-              reject(err);
+              resolve(err);
             } else {
               resolve(results);
             }
           });
         })
         .catch(function (err) {
-          reject(err);
+          resolve(err);
         });
     });
   }
@@ -94,14 +94,14 @@ class MySQLDatabase extends Database {
           connection.query(queryString, values, function (err, results) {
             connection.release(); // Release the connection back to the pool
             if (err) {
-              reject(err);
+              resolve(err);
             } else {
               resolve(results);
             }
           });
         })
         .catch(function (err) {
-          reject(err);
+          resolve(err);
         });
     });
   }

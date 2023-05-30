@@ -127,7 +127,7 @@ module.exports = function mySqlOperationQuery(parameters) {
 
         case "insert": {
           const resultInsert = await database.queryWithValues(
-            "SELECT * FROM ?? WHERE ??",
+            "INSERT INTO ?? SET ?",
             [
               collectionName,
               Object.keys(parametersToUse),

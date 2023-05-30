@@ -18,10 +18,11 @@ module.exports = function addPerson(database, usedDatabase, parameters) {
         queryOperation: "insert",
         parametersToUse: {
           id: generatedUUID,
-          name: parameters?.name,
+          gender: parameters?.gender,
+          lastname: parameters?.name,
           middlename: parameters?.middlename,
           firstname: parameters?.firstname,
-          gender: parameters?.gender,
+          gender: parameters?.gender || "Other",
           birthday: parameters?.birthday,
           deathday: parameters?.deathday,
           info: parameters?.info,
@@ -58,6 +59,7 @@ module.exports = function addPerson(database, usedDatabase, parameters) {
             data: response,
           });
         }
+        //WORKING
         case "MySQL": {
           const existsPerson = await ifPersonExists(
             database,
@@ -65,30 +67,47 @@ module.exports = function addPerson(database, usedDatabase, parameters) {
             generatedUUID
           );
           console.log("existsPerson?", existsPerson);
-          const response = await sqlOperationQuery(params);
-          console.log("TELL ME WHYYYYYYYYY", response);
 
-          /**           
-           * const result = await database.getConnection.query(
-            sql,
-            values,
-            function (error, results, fields) {
-              if (error) {
-                console.error(`Failed to add new person: ${error.message}`);
-                return {
-                  error: "Failed to add new person",
-                  msg: error.message,
-                  stack: error.stack,
-                };
-              }
-              console.log(
-                `New person added successfully with ID ${results.insertId}`
-              );
-              return results;
-            }
+          if (existsPerson) {
+            resolve({
+              error: "This Person already exists!",
+            });
+          }
+
+          let queryString = "INSERT INTO " + params.collectionName + " (";
+          console.log("queryString", queryString);
+
+          const keysToInsert = Object.keys(params.parametersToUse);
+          const valuesToInsert = Object.values(params.parametersToUse);
+
+          const questionMarksArray = [];
+          console.log("keysToInsert.length", keysToInsert.length);
+
+          for(let i = 0; i < keysToInsert.length; i++) {
+            questionMarksArray[i] = "?";
+          }
+
+
+
+
+          console.log("keysToInsert", keysToInsert);
+          console.log("valuesToInsert", valuesToInsert);
+          console.log("questionMarksArray", questionMarksArray);
+
+          queryString = queryString + keysToInsert.join(",") + ") VALUES (" + questionMarksArray.join(",") + ")";
+          
+          console.log("queryString", queryString);
+
+
+
+          const insertResponse = await database.queryWithValues(
+            queryString, valuesToInsert
           );
- */
-          if (result.insertId) {
+
+          //const response = await sqlOperationQuery(params);
+          console.log("TELL ME WHYYYYYYYYY", insertResponse);
+
+          if (insertResponse.insertId) {
             resolve({
               data: result,
             });
