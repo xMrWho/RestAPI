@@ -90,8 +90,21 @@ module.exports = function mySqlOperationQuery(parameters) {
         case "findWithParms": {
           //const sqlStatementFindWithParams = "SELECT * FROM ?? WHERE ??";
           //await connection.query()
+          const resultFind = await database.queryWithValues(
+            "SELECT * FROM ?? WHERE ??",
+            [
+              collectionName,
+              Object.keys(parametersToUse),
+              Object.values(parametersToUse),
+            ]
+          );
 
-          conn.query(
+          resolve({
+            resultMessage: successMessage,
+            result: resultFind,
+          });
+
+          /**  const resultFind = await database.query(
             "SELECT * FROM ?? WHERE ??",
             [
               collectionName,
@@ -109,11 +122,26 @@ module.exports = function mySqlOperationQuery(parameters) {
                 fields: fields,
               });
             }
-          );
+          ); */
         }
 
         case "insert": {
-          const results = await conn.query(
+          const resultInsert = await database.queryWithValues(
+            "SELECT * FROM ?? WHERE ??",
+            [
+              collectionName,
+              Object.keys(parametersToUse),
+              Object.values(parametersToUse),
+            ]
+          );
+          
+          console.log("resultInsert", resultInsert);
+          resolve({
+            resultMessage: successMessage,
+            result: resultInsert,
+          });
+
+          /** const results = await database.query(
             "INSERT INTO ?? SET ?",
             [collectionName, parametersToUse],
             function (error, results, fields) {
@@ -127,8 +155,7 @@ module.exports = function mySqlOperationQuery(parameters) {
                 fields: fields,
               });
             }
-          );
-
+          ); 
           console.log("results", results);
 
           resolve({
@@ -136,6 +163,8 @@ module.exports = function mySqlOperationQuery(parameters) {
             result: results,
             //fields: fields,
           });
+          
+          */
         }
 
         // Remaining cases omitted for brevity

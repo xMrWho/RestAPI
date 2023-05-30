@@ -1,15 +1,13 @@
 const uuid = require("uuid");
+const { ObjectId } = require("mongodb");
+
 const mongoOperationQuery = require("../../methods/mongoOperationQuery");
 const sqlOperationQuery = require("../../methods/mySqlOperationQuery");
-const getPerson = require("./getPerson");
+const ifPersonExists = require("./ifPersonExists");
 
 // Add a new person to the database
 module.exports = function addPerson(database, usedDatabase, parameters) {
-  const sqlStatement =
-    "INSERT INTO persons (id, firstname, middlename, lastname, gender, birthday, deathday, info) VALUES " +
-    "(?, ?, ?, ?, ?, ?, ?, ?)";
-
-  return new Promise(async function (resolve, reject) {
+  return new Promise(async function (resolve) {
     try {
       const generatedUUID = uuid.v4();
       console.log("Generated id: ", generatedUUID);
@@ -32,21 +30,16 @@ module.exports = function addPerson(database, usedDatabase, parameters) {
         successMessage: "Operation was successful",
       };
 
-
-      async function personExists(usedId) {
-        const personExists = await getPerson(
-          database,
-          usedDatabase,
-          usedId
-        );
-        console.log("personExists?", personExists);
-      }
-
       switch (usedDatabase) {
         //not tested
         case "MongoDB": {
           const objectId = new ObjectId();
-          personExists(objectId);
+          const existsPerson = await ifPersonExists(
+            database,
+            usedDatabase,
+            objectId
+          );
+          console.log("existsPerson?", existsPerson);
 
           parameters.parametersToUse.id = objectId;
           const response = await mongoOperationQuery(params);
@@ -66,12 +59,14 @@ module.exports = function addPerson(database, usedDatabase, parameters) {
           });
         }
         case "MySQL": {
-          const existsPerson = await personExists(generatedUUID);
+          const existsPerson = await ifPersonExists(
+            database,
+            usedDatabase,
+            generatedUUID
+          );
           console.log("existsPerson?", existsPerson);
           const response = await sqlOperationQuery(params);
-          
-          
-
+          console.log("TELL ME WHYYYYYYYYY", response);
 
           /**           
            * const result = await database.getConnection.query(
