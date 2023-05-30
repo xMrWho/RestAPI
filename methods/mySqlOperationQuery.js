@@ -125,46 +125,25 @@ module.exports = function mySqlOperationQuery(parameters) {
           ); */
         }
 
+        //WORKING FINE
         case "insert": {
-          const resultInsert = await database.queryWithValues(
-            "INSERT INTO ?? SET ?",
-            [
-              collectionName,
-              Object.keys(parametersToUse),
-              Object.values(parametersToUse),
-            ]
+          let queryString = "INSERT INTO " + collectionName + " (";
+          const valuesToInsert = Object.values(parametersToUse);
+
+          const questionMarksArray = [];
+          for(let i = 0; i < Object.keys(parametersToUse).length; i++) {
+            questionMarksArray[i] = "?";
+          }
+          queryString = queryString + Object.keys(parametersToUse).join(",") + ") VALUES (" + questionMarksArray.join(",") + ")";
+
+          const insertResponse = await database.queryWithValues(
+            queryString, valuesToInsert
           );
           
-          console.log("resultInsert", resultInsert);
           resolve({
             resultMessage: successMessage,
-            result: resultInsert,
+            result: insertResponse,
           });
-
-          /** const results = await database.query(
-            "INSERT INTO ?? SET ?",
-            [collectionName, parametersToUse],
-            function (error, results, fields) {
-              if (error) {
-                reject(rejectOnError(error));
-                return;
-              }
-              resolve({
-                resultMessage: successMessage,
-                result: results,
-                fields: fields,
-              });
-            }
-          ); 
-          console.log("results", results);
-
-          resolve({
-            resultMessage: successMessage,
-            result: results,
-            //fields: fields,
-          });
-          
-          */
         }
 
         // Remaining cases omitted for brevity

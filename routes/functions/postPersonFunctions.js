@@ -27,11 +27,8 @@ module.exports = async function postPersonFunctions(options) {
         return res.status(200).send(getResponse);
       }
 
-      //WIP
+      //WORKING
       case "add": {
-        console.log("here addPerson", req?.body);
-        console.log(req?.body?.params);
-
         // Check if the required parameters are present in the request body
         if (!req.body.params) {
           return res
