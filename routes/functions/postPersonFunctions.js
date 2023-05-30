@@ -36,11 +36,11 @@ module.exports = async function postPersonFunctions(options) {
             .send("Invalid request action missing Missing parameters: params");
         }
 
-        if (!req.body.params.name) {
+        if (!req.body.params.lastname) {
           return res
             .status(400)
             .send(
-              "Invalid request action missing Missing parameters: params.name"
+              "Invalid request action missing Missing parameters: params.lastname"
             );
         }
 

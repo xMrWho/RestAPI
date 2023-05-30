@@ -19,7 +19,7 @@ module.exports = function addPerson(database, usedDatabase, parameters) {
         parametersToUse: {
           id: generatedUUID,
           gender: parameters?.gender,
-          lastname: parameters?.name,
+          lastname: parameters?.lastname,
           middlename: parameters?.middlename,
           firstname: parameters?.firstname,
           gender: parameters?.gender || "Other",
