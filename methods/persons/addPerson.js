@@ -40,8 +40,6 @@ module.exports = function addPerson(database, usedDatabase, parameters) {
             usedDatabase,
             objectId
           );
-          console.log("existsPerson?", existsPerson);
-
           parameters.parametersToUse.id = objectId;
           const response = await mongoOperationQuery(params);
           //const response = await db.collection("persons").insertOne(parameters);
@@ -66,7 +64,6 @@ module.exports = function addPerson(database, usedDatabase, parameters) {
             usedDatabase,
             generatedUUID
           );
-          console.log("existsPerson?", existsPerson);
 
           if (existsPerson) {
             resolve({
@@ -74,42 +71,12 @@ module.exports = function addPerson(database, usedDatabase, parameters) {
             });
           }
 
-          let queryString = "INSERT INTO " + params.collectionName + " (";
-          console.log("queryString", queryString);
+          const response = await sqlOperationQuery(params);
 
-          const keysToInsert = Object.keys(params.parametersToUse);
-          const valuesToInsert = Object.values(params.parametersToUse);
-
-          const questionMarksArray = [];
-          console.log("keysToInsert.length", keysToInsert.length);
-
-          for(let i = 0; i < keysToInsert.length; i++) {
-            questionMarksArray[i] = "?";
-          }
-
-
-
-
-          console.log("keysToInsert", keysToInsert);
-          console.log("valuesToInsert", valuesToInsert);
-          console.log("questionMarksArray", questionMarksArray);
-
-          queryString = queryString + keysToInsert.join(",") + ") VALUES (" + questionMarksArray.join(",") + ")";
-          
-          console.log("queryString", queryString);
-
-
-
-          const insertResponse = await database.queryWithValues(
-            queryString, valuesToInsert
-          );
-
-          //const response = await sqlOperationQuery(params);
-          console.log("TELL ME WHYYYYYYYYY", insertResponse);
-
-          if (insertResponse.insertId) {
+          if (response?.result) {
+            console.log("here", response);
             resolve({
-              data: result,
+              data: response,
             });
           } else {
             resolve({
