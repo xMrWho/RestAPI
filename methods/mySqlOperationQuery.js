@@ -63,7 +63,7 @@ module.exports = function mySqlOperationQuery(parameters) {
           if (parametersToUse.id) {
             const resultsFindOne = await database.queryWithValues(
               "SELECT * FROM ?? WHERE ?? = ?",
-              [collectionName, "id", parameters.id]
+              [collectionName, "id", parametersToUse.id]
             );
             resolve({
               resultMessage: successMessage,
