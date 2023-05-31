@@ -60,7 +60,7 @@ module.exports = async function postPersonFunctions(options) {
         return res.status(200).send(addResponse);
       }
 
-      //NEXT STEP
+      //working
       case "update": {
         const id = req?.body?.params?.id;
         if (id === undefined) {
@@ -88,7 +88,7 @@ module.exports = async function postPersonFunctions(options) {
         return res.status(200).send(updateResponse);
       }
 
-      //NEXT STEP
+      //NEXT UP:
       case "delete": {
         const id = req?.body?.params?.id;
         if (id === undefined) {

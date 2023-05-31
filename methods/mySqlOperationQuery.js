@@ -131,18 +131,52 @@ module.exports = function mySqlOperationQuery(parameters) {
           const valuesToInsert = Object.values(parametersToUse);
 
           const questionMarksArray = [];
-          for(let i = 0; i < Object.keys(parametersToUse).length; i++) {
+          for (let i = 0; i < Object.keys(parametersToUse).length; i++) {
             questionMarksArray[i] = "?";
           }
-          queryString = queryString + Object.keys(parametersToUse).join(",") + ") VALUES (" + questionMarksArray.join(",") + ")";
+          queryString =
+            queryString +
+            Object.keys(parametersToUse).join(",") +
+            ") VALUES (" +
+            questionMarksArray.join(",") +
+            ")";
 
           const insertResponse = await database.queryWithValues(
-            queryString, valuesToInsert
+            queryString,
+            valuesToInsert
+          );
+
+          resolve({
+            resultMessage: successMessage,
+            result: insertResponse,
+          });
+        }
+
+        //working
+        case "update": {
+          let queryString = "UPDATE " + collectionName + " SET ";
+
+          // Perform the desired operation on each key
+          const queryKeysToUpdate = [];
+          Object.getOwnPropertyNames(parametersToUse).forEach(function (key) {
+            // Check if the value of the current key matches your condition
+            if (key !== "id") {
+              queryKeysToUpdate.push(`${key}=?`); // Add the key with the desired format
+            }
+          });
+          const queryValuesToUpdate = Object.values(parametersToUse);
+          queryValuesToUpdate.shift();
+          queryString =
+            queryString + queryKeysToUpdate.join(",") + " WHERE id = ?";
+          queryValuesToUpdate.push(parametersToUse.id);
+          const updateResponse = await database.queryWithValues(
+            queryString,
+            queryValuesToUpdate
           );
           
           resolve({
             resultMessage: successMessage,
-            result: insertResponse,
+            result: updateResponse,
           });
         }
 

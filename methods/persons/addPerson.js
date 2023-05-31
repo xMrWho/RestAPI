@@ -10,8 +10,6 @@ module.exports = function addPerson(database, usedDatabase, parameters) {
   return new Promise(async function (resolve) {
     try {
       const generatedUUID = uuid.v4();
-      console.log("Generated id: ", generatedUUID);
-
       const params = {
         database: database,
         collectionName: "persons",
@@ -72,9 +70,9 @@ module.exports = function addPerson(database, usedDatabase, parameters) {
           }
 
           const response = await sqlOperationQuery(params);
-
+          
           if (response?.result) {
-            console.log("here", response);
+            response.result.generatedPersonId = generatedUUID; 
             resolve({
               data: response,
             });

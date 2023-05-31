@@ -3,14 +3,9 @@ const ObjectID = require("mongodb").ObjectID;
 const mongoOperationQuery = require("../../methods/mongoOperationQuery");
 const sqlOperationQuery = require("../../methods/mySqlOperationQuery");
 
+const getPerson = require("./getPerson");
 
 module.exports = function updatePerson(database, usedDatabase, parameters) {
-  const { firstname, middlename, lastname, gender, birthday, deathday, info } =
-    parameters;
-
-  const sql =
-    "UPDATE persons SET firstname = ?, middlename = ?, lastname = ?, gender = ?, birthday = ?, deathday = ?, info = ? WHERE id = ?";
-
   return new Promise(async function (resolve, reject) {
     try {
       const isPersonEvenExisting = await getPerson(
@@ -19,11 +14,16 @@ module.exports = function updatePerson(database, usedDatabase, parameters) {
         parameters.id
       );
 
+      if(!isPersonEvenExisting?.data && !isPersonEvenExisting?.data.length > 0) {
+        resolve({ error: "The person with the ID " + id + " does not exists!"});
+      }
+
       if (isPersonEvenExisting.error) {
         resolve({ error: "This person does not exists" });
       }
 
       switch (usedDatabase) {
+        //not tested
         case "MongoDB": {
           const db = database.getConnection();
           const response = await db.collection("persons").updateOne(
@@ -46,32 +46,41 @@ module.exports = function updatePerson(database, usedDatabase, parameters) {
           });
         }
 
+        //working
         case "MySQL": {
-          const values = [
-            parameters.name,
-            parameters.middlename,
-            parameters.firstname,
-            parameters.gender,
-            parameters.birthday,
-            parameters.deathday,
-            parameters.info,
-            parameters.id || null,
-          ];
+          const params = {
+            database: database,
+            collectionName: "persons",
+            queryOperation: "update",
+            parametersToUse: {
+              id: parameters?.id,
+              gender: parameters?.gender,
+              lastname: parameters?.lastname,
+              middlename: parameters?.middlename,
+              firstname: parameters?.firstname,
+              gender: parameters?.gender,
+              birthday: parameters?.birthday,
+              deathday: parameters?.deathday,
+              info: parameters?.info,
+            },
+            errorMessage: "Error updating the person",
+            successMessage: "Operation was successful",
+          };
 
-          const result = await database
-            .getConnection()
-            .query(
-              "UPDATE people SET name = ?, middlename=?, firstname = ?, gender = ?, birthday = ?, deathday = ?, infos = ? WHERE id = ?",
-              values,
-              function (error, results) {
-                if (error) {
-                  console.error(`Failed to update person: ${error.message}`);
-                  return error;
-                }
-                console.log(`updated person successfully`);
-                return results;
-              }
-            );
+          const response = await sqlOperationQuery(params);
+          if (response?.result) {
+            response.result.generatedPersonId = generatedUUID; 
+            resolve({
+              data: response,
+            });
+          } else {
+            resolve({
+              error: "Error retrieving data from database",
+              msg: response?.message,
+              stack: response?.stack,
+            });
+          }
+
           if (result) {
             resolve({
               data: result,
