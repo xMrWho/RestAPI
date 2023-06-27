@@ -20,14 +20,16 @@ module.exports = function updatePerson(database, usedDatabase, parameters) {
         });
       }
 
-      if(!existsPerson) {
-        resolve({ error: "The person with the ID " + id + " does not exists!"});
+      if (!existsPerson) {
+        resolve({
+          error: "The person with the ID " + id + " does not exists!",
+        });
       }
 
       switch (usedDatabase) {
         //not tested
         case "MongoDB": {
-          const db = database.getConnection();
+          /**           const db = database.getConnection();
           const response = await db.collection("persons").updateOne(
             {
               id: ObjectId(parameters.id),
@@ -45,7 +47,8 @@ module.exports = function updatePerson(database, usedDatabase, parameters) {
 
           resolve({
             data: response,
-          });
+          }); */
+          resolve({ error: "Not implemented yet" });
         }
 
         //working
@@ -71,7 +74,7 @@ module.exports = function updatePerson(database, usedDatabase, parameters) {
 
           const response = await sqlOperationQuery(params);
           if (response?.result) {
-            response.result.generatedPersonId = generatedUUID; 
+            response.result.generatedPersonId = generatedUUID;
             resolve({
               data: response,
             });

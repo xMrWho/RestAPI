@@ -44,7 +44,7 @@ module.exports = function addPerson(database, usedDatabase, parameters) {
       switch (usedDatabase) {
         //not tested
         case "MongoDB": {
-          const objectId = new ObjectId();
+          /**           const objectId = new ObjectId();
           parameters.parametersToUse.id = objectId;
           const response = await mongoOperationQuery(params);
           //const response = await db.collection("persons").insertOne(parameters);
@@ -56,18 +56,19 @@ module.exports = function addPerson(database, usedDatabase, parameters) {
               msg: response.error.message,
               stack: response.error.stack,
             });
-          }
-
+          } 
           resolve({
             data: response,
           });
+          */
+          resolve({ error: "Not implemented yet" });
         }
         //WORKING
         case "MySQL": {
           const response = await sqlOperationQuery(params);
-          
+
           if (response?.result) {
-            response.result.generatedPersonId = generatedUUID; 
+            response.result.generatedPersonId = generatedUUID;
             resolve({
               data: response,
             });

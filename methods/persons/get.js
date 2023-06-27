@@ -7,23 +7,25 @@ module.exports = function getPerson(database, usedDatabase, personId) {
       switch (usedDatabase) {
         //not tested
         case "MongoDB": {
-          const params = {
-            database: database,
-            collectionName: "persons",
-            queryOperation: "findOne",
-            parametersToUse: { id: personId },
-            errorMessage: "Error getting person with id " + personId,
-            successMessage: "Successfully got person list",
-          };
-
-          const response = await mongoOperationQuery(params);
-          if (response.error) {
-            resolve(response);
-          }
-
-          resolve({
-            data: response,
-          });
+          /**           const params = {
+                      database: database,
+                      collectionName: "persons",
+                      queryOperation: "findOne",
+                      parametersToUse: { id: personId },
+                      errorMessage: "Error getting person with id " + personId,
+                      successMessage: "Successfully got person list",
+                    };
+          
+                    const response = await mongoOperationQuery(params);
+                    if (response.error) {
+                      resolve(response);
+                    }
+          
+                    resolve({
+                      data: response,
+          }); */
+          
+          resolve({ error: "Not implemented yet" });
         }
         case "MySQL": {
           //working

@@ -7,7 +7,8 @@ module.exports = function getPersonList(database, usedDatabase) {
       switch (usedDatabase) {
         //not tested
         case "MongoDB": {
-          const params = {
+          /**           
+           * const params = {
             database: database,
             collectionName: "persons",
             queryOperation: "find",
@@ -23,7 +24,9 @@ module.exports = function getPersonList(database, usedDatabase) {
 
           resolve({
             data: response,
-          });
+          }); */
+
+          resolve({ error: "Not implemented yet" });
         }
         //working
         case "MySQL": {
