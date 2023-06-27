@@ -3,23 +3,25 @@ const ObjectID = require("mongodb").ObjectID;
 const mongoOperationQuery = require("../../methods/mongoOperationQuery");
 const sqlOperationQuery = require("../../methods/mySqlOperationQuery");
 
-const getPerson = require("./getPerson");
+const ifPersonExists = require("./ifPersonExists");
 
 module.exports = function updatePerson(database, usedDatabase, parameters) {
   return new Promise(async function (resolve, reject) {
     try {
-      const isPersonEvenExisting = await getPerson(
+      const existsPerson = await ifPersonExists(
         database,
         usedDatabase,
-        parameters.id
+        generatedUUID
       );
 
-      if(!isPersonEvenExisting?.data && !isPersonEvenExisting?.data.length > 0) {
-        resolve({ error: "The person with the ID " + id + " does not exists!"});
+      if (existsPerson) {
+        resolve({
+          error: "This Person already exists!",
+        });
       }
 
-      if (isPersonEvenExisting.error) {
-        resolve({ error: "This person does not exists" });
+      if(!existsPerson) {
+        resolve({ error: "The person with the ID " + id + " does not exists!"});
       }
 
       switch (usedDatabase) {
@@ -78,18 +80,6 @@ module.exports = function updatePerson(database, usedDatabase, parameters) {
               error: "Error retrieving data from database",
               msg: response?.message,
               stack: response?.stack,
-            });
-          }
-
-          if (result) {
-            resolve({
-              data: result,
-            });
-          } else {
-            resolve({
-              error: "Error retrieving data from database",
-              msg: result?.message,
-              stack: result?.stack,
             });
           }
         }

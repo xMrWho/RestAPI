@@ -1,10 +1,22 @@
 const ObjectID = require('mongodb').ObjectID;
 const mongoOperationQuery = require("../../methods/mongoOperationQuery");
 const sqlOperationQuery = require("../../methods/mySqlOperationQuery");
+const ifPersonExists = require("./ifPersonExists");
 
 
 module.exports = function deletePerson(database, usedDatabase, personId) {
-  return new Promise(function (resolve, reject) {
+  return new Promise(async function (resolve, reject) {
+
+    const existsPerson = await ifPersonExists(
+      database,
+      usedDatabase,
+      personId
+    );
+
+    if(!existsPerson) {
+      resolve({ error: "The person with the ID " + id + " does not exists!"});
+    }
+
     try {
       switch (usedDatabase) {
         case "MongoDB": {
@@ -17,7 +29,30 @@ module.exports = function deletePerson(database, usedDatabase, personId) {
           //children --> person_id
           //relationships --> person_id & partner_id
           //persons --> id
-          resolve({ error: "Not implemented yet" });
+          const params = {
+            database: database,
+            collectionName: "persons",
+            queryOperation: "delete",
+            parametersToUse: {
+              id:personId,
+            },
+            errorMessage: "Error deleting the person",
+            successMessage: "Operation was successful",
+          };
+
+          const response = await sqlOperationQuery(params);
+          if (response?.result) {
+            resolve({
+              data: response,
+            });
+          } else {
+            resolve({
+              error: "Error retrieving data from database",
+              msg: response?.message,
+              stack: response?.stack,
+            });
+          }
+
         }
         default: {
           resolve({ error: "Not implemented yet" });

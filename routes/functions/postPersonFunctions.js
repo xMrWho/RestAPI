@@ -109,7 +109,7 @@ module.exports = async function postPersonFunctions(options) {
       }
     }
   } catch (err) {
-    console.log("Cathc case with error", err)
+    console.log("Catch case with error", err)
     // Handle any errors that occur during the request
     next(err);
   }

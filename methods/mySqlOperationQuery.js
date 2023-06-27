@@ -180,6 +180,20 @@ module.exports = function mySqlOperationQuery(parameters) {
           });
         }
 
+        case "delete": {
+          const deleteQuery = "DELETE FROM " + collectionName + " WHERE id = ?";
+          const deleteResponse = await database.delete(
+            deleteQuery
+          );
+          
+          resolve({
+            resultMessage: successMessage,
+            result: deleteResponse,
+          });
+
+
+        }
+
         // Remaining cases omitted for brevity
 
         default: {
