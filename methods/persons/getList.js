@@ -1,5 +1,5 @@
-const mongoOperationQuery = require("../../methods/mongoOperationQuery");
-const sqlOperationQuery = require("../../methods/mySqlOperationQuery");
+const mongoOperationQuery = require("../../PLANNED/DATABASE/mongoOperationQuery");
+const sqlOperationQuery = require("../mySqlOperationQuery");
 
 module.exports = function getPersonList(database, usedDatabase) {
   return new Promise(async function (resolve, reject) {

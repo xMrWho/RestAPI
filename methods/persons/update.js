@@ -1,9 +1,9 @@
 const ObjectID = require("mongodb").ObjectID;
 
-const mongoOperationQuery = require("../../methods/mongoOperationQuery");
-const sqlOperationQuery = require("../../methods/mySqlOperationQuery");
+const mongoOperationQuery = require("../../PLANNED/DATABASE/mongoOperationQuery");
+const sqlOperationQuery = require("../mySqlOperationQuery");
 
-const ifPersonExists = require("./ifPersonExists");
+const ifPersonExists = require("./exists");
 
 module.exports = function updatePerson(database, usedDatabase, parameters) {
   return new Promise(async function (resolve, reject) {

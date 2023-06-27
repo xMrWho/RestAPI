@@ -1,3 +1,4 @@
+
 module.exports = function updatePet(database, usedDatabase, parameters) {
     return new Promise(async function (resolve, reject) {
       try {

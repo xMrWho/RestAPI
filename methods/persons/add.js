@@ -1,15 +1,27 @@
 const uuid = require("uuid");
 const { ObjectId } = require("mongodb");
 
-const mongoOperationQuery = require("../../methods/mongoOperationQuery");
-const sqlOperationQuery = require("../../methods/mySqlOperationQuery");
-const ifPersonExists = require("./ifPersonExists");
+const mongoOperationQuery = require("../../PLANNED/DATABASE/mongoOperationQuery");
+const sqlOperationQuery = require("../mySqlOperationQuery");
+const ifPersonExists = require("./exists");
 
 // Add a new person to the database
 module.exports = function addPerson(database, usedDatabase, parameters) {
   return new Promise(async function (resolve) {
     try {
       const generatedUUID = uuid.v4();
+      const existsPerson = await ifPersonExists(
+        database,
+        usedDatabase,
+        generatedUUID
+      );
+
+      if (existsPerson) {
+        resolve({
+          error: "This Person already exists!",
+        });
+      }
+
       const params = {
         database: database,
         collectionName: "persons",
@@ -33,11 +45,6 @@ module.exports = function addPerson(database, usedDatabase, parameters) {
         //not tested
         case "MongoDB": {
           const objectId = new ObjectId();
-          const existsPerson = await ifPersonExists(
-            database,
-            usedDatabase,
-            objectId
-          );
           parameters.parametersToUse.id = objectId;
           const response = await mongoOperationQuery(params);
           //const response = await db.collection("persons").insertOne(parameters);
@@ -57,18 +64,6 @@ module.exports = function addPerson(database, usedDatabase, parameters) {
         }
         //WORKING
         case "MySQL": {
-          const existsPerson = await ifPersonExists(
-            database,
-            usedDatabase,
-            generatedUUID
-          );
-
-          if (existsPerson) {
-            resolve({
-              error: "This Person already exists!",
-            });
-          }
-
           const response = await sqlOperationQuery(params);
           
           if (response?.result) {

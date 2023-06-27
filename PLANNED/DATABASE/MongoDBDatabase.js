@@ -1,7 +1,7 @@
 //not tested
 
 const { MongoClient } = require("mongodb");
-const Database = require("./Database");
+const Database = require("../../database/Database");
 
 
 

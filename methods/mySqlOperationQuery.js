@@ -173,7 +173,7 @@ module.exports = function mySqlOperationQuery(parameters) {
             queryString,
             queryValuesToUpdate
           );
-          
+
           resolve({
             resultMessage: successMessage,
             result: updateResponse,
@@ -181,17 +181,22 @@ module.exports = function mySqlOperationQuery(parameters) {
         }
 
         case "delete": {
-          const deleteQuery = "DELETE FROM " + collectionName + " WHERE id = ?";
-          const deleteResponse = await database.delete(
-            deleteQuery
-          );
-          
+          console.log("DELETE", parametersToUse);
+
+          const deleteQuery =
+            "DELETE FROM " +
+            collectionName +
+            " WHERE id = '" +
+            parametersToUse.id + "'";
+
+          console.log("delQuery", deleteQuery);
+
+          const deleteResponse = await database.delete(deleteQuery);
+
           resolve({
             resultMessage: successMessage,
             result: deleteResponse,
           });
-
-
         }
 
         // Remaining cases omitted for brevity

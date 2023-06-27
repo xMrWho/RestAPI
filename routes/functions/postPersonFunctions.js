@@ -1,9 +1,12 @@
 module.exports = async function postPersonFunctions(options) {
-  const getPersonList = require("../../methods/persons/getPersonList.js");
-  const getPerson = require("../../methods/persons/getPerson.js");
-  const addPerson = require("../../methods/persons/addPerson.js");
-  const updatePerson = require("../../methods/persons/updatePerson.js");
-  const deletePerson = require("../../methods/persons/deletePerson.js");
+
+const getPerson = require("../../methods/persons/get");
+const getPersonList = require("../../methods/persons/getList");
+const addPerson = require("../../methods/persons/add");
+const getDescendantsFromPerson = require("../../methods/persons/getDescendants");
+const searchPerson = require("../../methods/persons/search");
+const updatePerson = require("../../methods/persons/update");
+
 
   const { req, res, next, dbManager, usedDatabase } = options;
   try {
@@ -88,7 +91,7 @@ module.exports = async function postPersonFunctions(options) {
         return res.status(200).send(updateResponse);
       }
 
-      //NEXT UP:
+      //working:
       case "delete": {
         const id = req?.body?.params?.id;
         if (id === undefined) {
@@ -97,11 +100,22 @@ module.exports = async function postPersonFunctions(options) {
             .send("Invalid request action missing parameter body.params.id");
         }
         // Call a method to update the person in the database
-        const deleteResponse = await deletePerson(dbManager, usedDatabase, {
-          ...req.body.params,
-        });
+        const deleteResponse = await deletePerson(dbManager, usedDatabase, id);
 
         return res.status(200).send(deleteResponse);
+      }
+      //search: to be tested
+      case "search": {
+        if(req?.body?.params?.firstname === null && req?.body?.params?.lastname === null) {
+          return res
+            .status(400)
+            .send("Invalid request action missing parameter body.params.firstname and/or body.params.lastname");
+        }
+        const searchResponse = await searchPerson(dbManager, usedDatabase, {
+          ...req.body.params,
+        });
+        return res.status(200).send(searchResponse);
+
       }
 
       default: {

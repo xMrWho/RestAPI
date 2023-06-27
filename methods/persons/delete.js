@@ -1,7 +1,7 @@
 const ObjectID = require('mongodb').ObjectID;
-const mongoOperationQuery = require("../../methods/mongoOperationQuery");
-const sqlOperationQuery = require("../../methods/mySqlOperationQuery");
-const ifPersonExists = require("./ifPersonExists");
+const mongoOperationQuery = require("../../PLANNED/DATABASE/mongoOperationQuery");
+const sqlOperationQuery = require("../mySqlOperationQuery");
+const ifPersonExists = require("./exists");
 
 
 module.exports = function deletePerson(database, usedDatabase, personId) {
@@ -34,7 +34,7 @@ module.exports = function deletePerson(database, usedDatabase, personId) {
             collectionName: "persons",
             queryOperation: "delete",
             parametersToUse: {
-              id:personId,
+              id: personId,
             },
             errorMessage: "Error deleting the person",
             successMessage: "Operation was successful",
