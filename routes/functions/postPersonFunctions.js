@@ -106,14 +106,28 @@ const updatePerson = require("../../methods/persons/update");
       }
       //search: to be tested
       case "search": {
-        if(req?.body?.params?.firstname === null && req?.body?.params?.lastname === null) {
+        if (!req.body.params) {
           return res
             .status(400)
-            .send("Invalid request action missing parameter body.params.firstname and/or body.params.lastname");
+            .send("Invalid request action missing Missing parameters: params");
         }
+
+
+        if (!req.body.params.firstname && !req.body.params.lastname) {
+          return res
+            .status(400)
+            .send(
+              "Invalid request action missing Missing parameters: params.firstname or params.lastname"
+            );
+        }
+        
         const searchResponse = await searchPerson(dbManager, usedDatabase, {
           ...req.body.params,
         });
+
+        console.log("searchResponse",searchResponse)
+
+
         return res.status(200).send(searchResponse);
 
       }

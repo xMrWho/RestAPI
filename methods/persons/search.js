@@ -1,51 +1,52 @@
-//const mongoOperationQuery = require("../mongoOperationQuery");
-//const sqlOperationQuery = require("../mySqlOperationQuery");
-const getPerson = require("./get");
+module.exports = async function searchPerson(database, usedDatabase, parameter) {
+  try {
+    const firstname = parameter?.firstname;
+    const lastname = parameter?.lastname;
+    console.log("firstname:", firstname);
+    console.log("lastname:", lastname);
 
-module.exports = function searchPerson(database, usedDatabase, parameter) {
-  return new Promise(async function (resolve, reject) {
-    if (
-      (parameter.firstname != null || !parameter.firstname.isEmpty()) &&
-      (parameter.lastname != null || parameter.lastname.isEmpty())
-    ) {
-    }
-    if (
-      (parameter.firstname == null || parameter.firstname.isEmpty()) &&
-      (parameter.lastname != null || !parameter.lastname.isEmpty())
-    ) {
-    }
-    if (
-      (parameter.firstname != null || !parameter.firstname.isEmpty()) &&
-      (parameter.lastname == null || parameter.lastname.isEmpty())
-    ) {
-      if (!/^[a-zA-Z]+$/.test(parameter.firstname)) {
-        throw new Error("First name and last name must contain only letters");
-      } else {
-        resolve({
+    if ((firstname != null && firstname !== "") && (lastname != null && lastname !== "")) {
+      return { error: "Not implemented yet 1" };
+    } else if ((firstname == null || firstname === "") && (lastname != null && lastname !== "")) {
+      return { error: "Not implemented yet 2" };
+    } else if ((firstname != null && firstname !== "") && (lastname == null || lastname === "")) {
+      if (!/^[a-zA-Z]+$/.test(firstname)) {
+        return {
           error: "An Error occurred",
-          msg: "Can not read data correctly",
-        });
-      }
-      switch (usedDatabase) {
-        //not tested
-        case "MongoDB": {
-            resolve({ error: "Not implemented yet" });
-        }
-        case "MySQL": {
-          const sqlString = "SELECT * FROM person WHERE firstname LIKE '%" + firstname + "%'";
-          const x = await database.query(sqlString);
-          console.log("XXXX", x);
-          
-         // resolve({
-           // data: response.result,
-         // });
+          msg: "First- and/or lastname cannot contain any numbers",
+        };
+      } else {
+        switch (usedDatabase) {
+          // Add the implementation for each supported database
+          case "MongoDB": {
+            return { error: "Not implemented yet MONGO" };
+          }
+          case "MySQL": {
+            const sqlString = "SELECT * FROM persons WHERE firstname LIKE '%" + firstname + "%'";
+            const response = await database.query(sqlString);
+            console.log("SQL Query Response:", response);
 
-          resolve({ error: "Not implemented yet" });
-        }
-        default: {
-          resolve({ error: "Not implemented yet" });
+            if (Array.isArray(response)) {
+              console.log("RESPONSE !!!");
+              return { data: response };
+            } else {
+              return {
+                error: "Error retrieving data from the database",
+                msg: response.message,
+                stack: response.stack,
+              };
+            }
+          }
+          default: {
+            return { error: "Not implemented yet DEFAULT" };
+          }
         }
       }
+    } else {
+      return { error: "Invalid request" };
     }
-  });
+  } catch (error) {
+    console.error("Error occurred in searchPerson:", error);
+    return { error: "Something went wrong" };
+  }
 };

@@ -84,6 +84,7 @@ module.exports = function mySqlOperationQuery(parameters) {
             resultMessage: successMessage,
             result: resultsFindAll,
           });
+
         }
         //not tested
         case "find":
@@ -103,26 +104,7 @@ module.exports = function mySqlOperationQuery(parameters) {
             resultMessage: successMessage,
             result: resultFind,
           });
-
-          /**  const resultFind = await database.query(
-            "SELECT * FROM ?? WHERE ??",
-            [
-              collectionName,
-              Object.keys(parametersToUse),
-              Object.values(parametersToUse),
-            ],
-            function (error, results, fields) {
-              if (error) {
-                reject(rejectOnError(error));
-                return;
-              }
-              resolve({
-                resultMessage: successMessage,
-                result: results,
-                fields: fields,
-              });
-            }
-          ); */
+          break;
         }
 
         //WORKING FINE
@@ -150,6 +132,7 @@ module.exports = function mySqlOperationQuery(parameters) {
             resultMessage: successMessage,
             result: insertResponse,
           });
+          break;
         }
 
         //working
@@ -178,25 +161,23 @@ module.exports = function mySqlOperationQuery(parameters) {
             resultMessage: successMessage,
             result: updateResponse,
           });
+          break;
         }
 
         case "delete": {
-          console.log("DELETE", parametersToUse);
-
           const deleteQuery =
             "DELETE FROM " +
             collectionName +
             " WHERE id = '" +
             parametersToUse.id + "'";
-
-          console.log("delQuery", deleteQuery);
-
+            
           const deleteResponse = await database.delete(deleteQuery);
 
           resolve({
             resultMessage: successMessage,
             result: deleteResponse,
           });
+          break;
         }
 
         // Remaining cases omitted for brevity
