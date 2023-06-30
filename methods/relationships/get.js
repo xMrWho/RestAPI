@@ -7,7 +7,7 @@ module.exports = function getRelationship(database, usedDatabase, parameters) {
       switch (usedDatabase) {
         //not tested
         case "MongoDB": {
-          const params = {
+          /**           const params = {
             database: database,
             collectionName: "relationships",
             queryOperation: "findOne",
@@ -23,11 +23,12 @@ module.exports = function getRelationship(database, usedDatabase, parameters) {
 
           resolve({
             data: response,
-          });
+          }); */
+          resolve({ error: "Not implemented yet" });
         }
         case "MySQL": {
           //working
-          if(parameters.id) {
+          if (parameters.id) {
             const params = {
               database: database,
               collectionName: "relationships",
@@ -36,30 +37,31 @@ module.exports = function getRelationship(database, usedDatabase, parameters) {
               errorMessage: "Error getting relationship with id " + personId,
               successMessage: "Successfully got relationship",
             };
-  
+
             const response = await sqlOperationQuery(params);
             resolve({
               data: response.result,
             });
           }
-          if(parameters.partner01, parameters.partner02) {
+          if (parameters.partner01 && parameters.partner02) {
             const params = {
               database: database,
               collectionName: "relationships",
               queryOperation: "findWithParms",
               parametersToUse: { partner01: parameters.partner01 },
-              errorMessage: "Error getting relationship with id " + personId,
+              errorMessage:
+                "Error getting relationship with partners " +
+                parameters.partner01 +
+                " & " +
+                parameters.partner02,
               successMessage: "Successfully got relationship",
             };
-  
+
             const response = await sqlOperationQuery(params);
             resolve({
               data: response.result,
             });
           }
-
-
-          
         }
         default: {
           resolve({ error: "Not implemented yet" });

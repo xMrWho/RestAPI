@@ -1,5 +1,6 @@
 // Import the route handlers
 const personsRoutes = require("./persons.js");
+const relationshipRoutes = require('./relationships.js');
 
 //PLANNED
 //const animalsRoutes = require('./animals.js');
@@ -15,12 +16,25 @@ class Routways {
     this.middleware = middleware;
   }
 
-  setupRoutes() {
-    const apiMiddleware = this.middleware;
+  setupParentRoutes() {
+    const parentMiddleware = this.middleware;
+    const parentRoutways = new parentRoutes(parentMiddleware);
+    parentRoutways.setupRoutes();
+    this.router.use('/parents', parentRoutways.getRouter());
+  }
+  
+  setupRelationshipRoutes() {
+    const relationshipMiddleware = this.middleware;
+    const relationshipRoutways = new relationshipRoutes(relationshipMiddleware);
+    relationshipRoutways.setupRoutes();
+    this.router.use('/relationships', relationshipRoutways.getRouter());
+  }
 
-    const routwaysPerson = new personsRoutes(apiMiddleware);
-    routwaysPerson.setupRoutes();
-    this.router.use(routwaysPerson.getRouter());
+  setupRoutes() {
+    setupParentRoutes();
+    setupRelationshipRoutes();
+
+
 
     //PLANNED
     // this.router.use('/animals', this.middleware, animalsRoutes);
@@ -30,7 +44,7 @@ class Routways {
 
     this.router.get("/", function callback(req, res, next) {
       res.status(200);
-      res.send({ message: "Hallo" });
+      res.send({ message: "" });
     });
 
     this.router.get("*", function callback(req, res, next) {
