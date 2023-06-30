@@ -1,12 +1,14 @@
-module.exports = function getChildren(database, usedDatabase, parameters) {
+module.exports = function deleteChildren(database, usedDatabase, parameters) {
     return new Promise(async function (resolve, reject) {
       try {
         switch (usedDatabase) {
           case "MongoDB": {
+            resolve({ error: "Not implemented yet" });
           }
           case "MySQL": {
           }
           default: {
+            resolve({ error: "Not implemented yet" });
           }
         }
       } catch (error) {

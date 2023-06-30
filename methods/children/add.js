@@ -3,10 +3,12 @@ module.exports = function addChildren(database, usedDatabase, parameters) {
       try {
         switch (usedDatabase) {
           case "MongoDB": {
+            resolve({ error: "Not implemented yet" });
           }
           case "MySQL": {
           }
           default: {
+            resolve({ error: "Not implemented yet" });
           }
         }
       } catch (error) {
