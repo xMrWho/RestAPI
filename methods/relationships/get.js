@@ -25,6 +25,7 @@ module.exports = function getRelationship(database, usedDatabase, parameters) {
             data: response,
           }); */
           resolve({ error: "Not implemented yet" });
+          break;
         }
         case "MySQL": {
           //working
@@ -76,6 +77,7 @@ module.exports = function getRelationship(database, usedDatabase, parameters) {
             resolve({
               data: response01.result.concat(response02.result).unique(),
             });
+            break;
           }
           else if(parameters.partner01 && !parameters.partner02) {
             const params = {
@@ -94,10 +96,12 @@ module.exports = function getRelationship(database, usedDatabase, parameters) {
             resolve({
               data: response.result,
             });
+            break;
           }
         }
         default: {
           resolve({ error: "Not implemented yet" });
+          break;
         }
       }
     } catch (error) {

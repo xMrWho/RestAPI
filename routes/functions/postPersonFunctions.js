@@ -127,7 +127,7 @@ const updatePerson = require("../../methods/persons/update");
         }
 
 
-        if (!req.body.params.firstname && !req.body.params.lastname) {
+        if (!req.body.params.firstname || !req.body.params.lastname) {
           return res
             .status(400)
             .send(

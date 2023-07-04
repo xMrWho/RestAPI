@@ -1,5 +1,3 @@
-const ObjectID = require('mongodb').ObjectID;
-const mongoOperationQuery = require("../../PLANNED/DATABASE/mongoOperationQuery");
 const sqlOperationQuery = require("../mySqlOperationQuery");
 const ifPersonExists = require("./exists");
 
@@ -21,14 +19,9 @@ module.exports = function deletePerson(database, usedDatabase, personId) {
       switch (usedDatabase) {
         case "MongoDB": {
           resolve({ error: "Not implemented yet" });
+          break;
         }
         case "MySQL": {
-          //pets --> person_id
-          //persons_cars --> person_id
-          //person_hobbies --> person_id
-          //children --> person_id
-          //relationships --> person_id & partner_id
-          //persons --> id
           const params = {
             database: database,
             collectionName: "persons",
@@ -52,10 +45,11 @@ module.exports = function deletePerson(database, usedDatabase, personId) {
               stack: response?.stack,
             });
           }
-
+          break;
         }
         default: {
           resolve({ error: "Not implemented yet" });
+          break;
         }
       }
     } catch (error) {

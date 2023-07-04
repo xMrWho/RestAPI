@@ -1,13 +1,13 @@
 const sqlOperationQuery = require("../mySqlOperationQuery");
 const ifChildExists = require("./exists");
 
-module.exports = function addChild(database, usedDatabase, parameters) {
+module.exports = function deleteChild(database, usedDatabase, parameters) {
   return new Promise(async function (resolve, reject) {
-
     const childExists = await ifChildExists(
       database,
       usedDatabase,
-      parameters.rel_id
+      parameters?.rel_id,
+      parameters?.person_id
     );
 
     if (childExists) {
@@ -18,29 +18,25 @@ module.exports = function addChild(database, usedDatabase, parameters) {
 
     try {
       switch (usedDatabase) {
-        //not tested
         case "MongoDB": {
           resolve({ error: "Not implemented yet" });
           break;
         }
         case "MySQL": {
-          //working
-          const params = {
-            database: database,
-            collectionName: "children",
-            queryOperation: "insert",
-            parametersToUse: {
-              rel_id: parameters?.rel_id,
-              person_id: parameters?.person_id,
-            },
-            errorMessage: "Error inserting the new person",
-            successMessage: "Operation was successful",
-          };
-
-          const response = await sqlOperationQuery(params);
-          resolve({
-            data: response.result,
-          });
+          const sqlString = "DELETE FROM children WHERE rel_id='" + parameters?.rel_id + "'";
+          const response = await database.query(sqlString);
+          console.log("SQL Query Response:", response);
+          if (response) {
+            resolve({
+              data: response,
+            });
+          } else {
+            resolve({
+              error: "Error retrieving data from database",
+              msg: response?.message,
+              stack: response?.stack,
+            });
+          }
           break;
         }
         default: {
@@ -50,7 +46,7 @@ module.exports = function addChild(database, usedDatabase, parameters) {
       }
     } catch (error) {
       resolve({
-        error: "An Error occurred",
+        error: "An Error occurred while trying to delete the person",
         msg: error.message,
         stack: error.stack,
       });

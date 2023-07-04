@@ -26,6 +26,7 @@ module.exports = function getPerson(database, usedDatabase, personId) {
           }); */
           
           resolve({ error: "Not implemented yet" });
+          break;
         }
         case "MySQL": {
           //working
@@ -42,10 +43,12 @@ module.exports = function getPerson(database, usedDatabase, personId) {
           resolve({
             data: response.result,
           });
+          break;
         }
         default: {
           resolve({ error: "Not implemented yet" });
         }
+        break;
       }
     } catch (error) {
       resolve({

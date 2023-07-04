@@ -4,6 +4,7 @@ module.exports = function deleteRelationship(database, usedDatabase, parameters)
         switch (usedDatabase) {
           case "MongoDB": {
             resolve({ error: "Not implemented yet" });
+            break;
           }
           case "MySQL": {
             const params = {
@@ -22,16 +23,19 @@ module.exports = function deleteRelationship(database, usedDatabase, parameters)
               resolve({
                 data: response,
               });
+              break;
             } else {
               resolve({
                 error: "Error retrieving data from database",
                 msg: response?.message,
                 stack: response?.stack,
               });
+              break;
             }
           }
           default: {
             resolve({ error: "Not implemented yet" });
+            break;
           }
         }
       } catch (error) {

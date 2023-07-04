@@ -62,6 +62,7 @@ module.exports = function addPerson(database, usedDatabase, parameters) {
           });
           */
           resolve({ error: "Not implemented yet" });
+          break;
         }
         //WORKING
         case "MySQL": {
@@ -79,9 +80,11 @@ module.exports = function addPerson(database, usedDatabase, parameters) {
               stack: response?.stack,
             });
           }
+          break;
         }
         default: {
           resolve({ error: "Not implemented yet" });
+          break;
         }
       }
     } catch (error) {

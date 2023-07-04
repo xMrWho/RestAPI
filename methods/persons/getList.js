@@ -27,6 +27,7 @@ module.exports = function getPersonList(database, usedDatabase) {
           }); */
 
           resolve({ error: "Not implemented yet" });
+          break;
         }
         //working
         case "MySQL": {
@@ -50,9 +51,11 @@ module.exports = function getPersonList(database, usedDatabase) {
             msg: response.message,
             stack: response.stack,
           });
+          break;
         }
         default: {
           resolve({ error: "Not implemented yet" });
+          break;
         }
       }
     } catch (error) {

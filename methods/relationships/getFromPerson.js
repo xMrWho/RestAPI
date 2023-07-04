@@ -17,6 +17,7 @@ module.exports = function getRelationshipsFromPerson(database, usedDatabase, par
         //not tested
         case "MongoDB": {
           resolve({ error: "Not implemented yet" });
+          break;
         }
         case "MySQL": {
           //working
@@ -29,14 +30,15 @@ module.exports = function getRelationshipsFromPerson(database, usedDatabase, par
             console.log("SQL Query Response partner_id:", responsePartnerId);
             const response = responsePersonId.concat(responsePartnerId).unique(); 
 
-
             resolve({
               data: response,
             });
+            break;
           }
         }
         default: {
           resolve({ error: "Not implemented yet" });
+          break;
         }
       }
     } catch (error) {

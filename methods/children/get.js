@@ -8,6 +8,7 @@ module.exports = function getChildren(database, usedDatabase, rel_id) {
         //not tested
         case "MongoDB": {
           resolve({ error: "Not implemented yet" });
+          break;
         }
         case "MySQL": {
           //working
@@ -24,9 +25,11 @@ module.exports = function getChildren(database, usedDatabase, rel_id) {
           resolve({
             data: response.result,
           });
+          break;
         }
         default: {
           resolve({ error: "Not implemented yet" });
+          break;
         }
       }
     } catch (error) {

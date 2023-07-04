@@ -50,6 +50,7 @@ module.exports = function updatePerson(database, usedDatabase, parameters) {
             data: response,
           }); */
           resolve({ error: "Not implemented yet" });
+          break;
         }
 
         //working
@@ -79,16 +80,19 @@ module.exports = function updatePerson(database, usedDatabase, parameters) {
             resolve({
               data: response,
             });
+            break;
           } else {
             resolve({
               error: "Error retrieving data from database",
               msg: response?.message,
               stack: response?.stack,
             });
+            break;
           }
         }
         default: {
           resolve({ error: "Not implemented yet" });
+          break;
         }
       }
     } catch (error) {
