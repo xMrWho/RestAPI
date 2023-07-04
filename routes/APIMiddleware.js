@@ -10,6 +10,14 @@ class APIMiddleware {
     this.getUsedDatabase= this.getUsedDatabase.bind(this);
   }
 
+  /**
+   * Execute the function.
+   *
+   * @param {Object} req - The request object.
+   * @param {Object} res - The response object.
+   * @param {Function} next - The next middleware function.
+   * @return {undefined} This function does not return anything.
+   */
   execute(req, res, next) {
     const apiKey = req.headers["x-api-key"];
     if (apiKey !== this.API_KEY) {
@@ -18,10 +26,20 @@ class APIMiddleware {
     next();
   }
 
+  /**
+   * Get the database manager.
+   *
+   * @return {DatabaseManager} The database manager.
+   */
   getDatabaseManager() {
     return this.databaseManager;
   }
 
+  /**
+   * Retrieves the used database.
+   *
+   * @return {type} The used database.
+   */
   getUsedDatabase() {
     return this.usedDatabase;
   }

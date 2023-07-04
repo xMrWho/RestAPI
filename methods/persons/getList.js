@@ -1,7 +1,13 @@
-const mongoOperationQuery = require("../../PLANNED/DATABASE/mongoOperationQuery");
 const sqlOperationQuery = require("../mySqlOperationQuery");
 
 module.exports = function getPersonList(database, usedDatabase) {
+/**
+ * Retrieves a list of persons from the specified database.
+ *
+ * @param {Object} database - The database object.
+ * @param {string} usedDatabase - The name of the used database.
+ * @return {Promise} A promise that resolves to an object containing the list of persons or an error message.
+ */
   return new Promise(async function (resolve, reject) {
     try {
       switch (usedDatabase) {

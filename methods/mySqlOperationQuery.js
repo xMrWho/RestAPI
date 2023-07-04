@@ -1,3 +1,15 @@
+/**
+ * Executes a MySQL operation query.
+ *
+ * @param {Object} parameters - The parameters for the query.
+ * @param {Object} parameters.database - The MySQL database connection.
+ * @param {string} parameters.collectionName - The name of the collection.
+ * @param {string} parameters.queryOperation - The type of query operation.
+ * @param {Object} parameters.parametersToUse - The parameters to use in the query.
+ * @param {string} parameters.errorMessage - The error message.
+ * @param {string} parameters.successMessage - The success message.
+ * @return {Promise} A promise that resolves with the result of the query.
+ */
 module.exports = function mySqlOperationQuery(parameters) {
   const {
     database,
@@ -8,6 +20,12 @@ module.exports = function mySqlOperationQuery(parameters) {
     successMessage,
   } = parameters;
 
+  /**
+   * Generates an object containing the error details.
+   *
+   * @param {Error} error - The error object.
+   * @return {Object} An object with the error details.
+   */
   function rejectOnError(error) {
     return {
       error: errorMessage,

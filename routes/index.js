@@ -3,8 +3,8 @@ const router = express.Router();
 
 // Import the route handlers
 const personsRoutes = require('./persons.js');
-const animalsRoutes = require('./animals.js');
-const carsRoutes = require('./cars.js');
+const animalsRoutes = require('../PLANNED/animals.js');
+const carsRoutes = require('../PLANNED/cars.js');
 const hobbiesRoutes = require('./hobbies.js');
 
 // Define the routes

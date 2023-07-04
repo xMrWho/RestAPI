@@ -1,3 +1,13 @@
+/**
+ * Searches for a person in the given database based on the provided parameters.
+ *
+ * @param {object} database - The database to search in.
+ * @param {string} usedDatabase - The type of database being used.
+ * @param {object} parameter - The search parameters.
+ * @param {string} parameter.firstname - The first name of the person.
+ * @param {string} parameter.lastname - The last name of the person.
+ * @return {Promise<object>} A promise that resolves with the search results or an error object.
+ */
 module.exports = function searchPerson(database, usedDatabase, parameter) {
   return new Promise(async function (resolve, reject) {
     try {

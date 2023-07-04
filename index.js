@@ -5,6 +5,7 @@ const cors = require("cors");
 const express = require("express");
 const bodyParser = require("body-parser");
 const http = require("http");
+const rateLimit = require("express-rate-limit");
 // const https = require('https');
 
 // REQUIREMENTS
@@ -22,6 +23,17 @@ const apiKeyFile = path.join(__dirname, "api_key.txt");
 
 // const credentials = {key: privateKey, cert: certificate};
 
+// Rate Limiting
+const limiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // Time window: 15 minutes
+  max: 100, // max requests: 100 per 15 minutes
+  message:
+    "Zu viele Anfragen von dieser IP, bitte versuchen Sie es später erneut.",
+});
+
+/**
+ *
+ */
 async function initServer() {
   const app = express();
   const PORT = 3000;
@@ -31,17 +43,42 @@ async function initServer() {
   const databaseConfigFile = CONSTANTS.DATABASE.configFile;
   const databaseConfig = JSON.parse(fs.readFileSync(databaseConfigFile));
 
-  this.database = await myDatebase(CONSTANTS.DATABASE.usedDatabase, databaseConfig);
-  
+  this.database = await myDatebase(
+    CONSTANTS.DATABASE.usedDatabase,
+    databaseConfig
+  );
+
   if (!this.database.checkConnection()) {
     throw new Error("Database Connection failed");
   }
 
-  app.use(
+  app.use(limiter);
+
+  // Content Security Policy
+  const cspOptions = {
+    directives: {
+      defaultSrc: ["'self'"],
+      scriptSrc: ["'self'"],
+      styleSrc: ["'self'"],
+      imgSrc: ["'self'"],
+      connectSrc: ["'self'"],
+      fontSrc: ["'self'"],
+      objectSrc: ["'none'"],
+      mediaSrc: ["'self'"],
+      frameSrc: ["'none'"],
+    },
+  };
+
+  app.use(function (req, res, next) {
+    res.setHeader("Content-Security-Policy", cspOptions.directives);
+    next();
+  });
+
+  /**   app.use(
     cors({
       origin: "*",
     })
-  );
+  ); */
   app.use(bodyParser.json());
   app.use(bodyParser.urlencoded({ extended: false }));
 

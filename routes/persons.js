@@ -7,10 +7,21 @@ class PersonRouter {
     this.middleware = middleware;
   }
 
+  /**
+   * Retrieves the router.
+   *
+   * @return {Object} The router object.
+   */
   getRouter() {
     return this.router;
   }
 
+  /**
+   * Sets up the routes for the application.
+   *
+   * @param {type} paramName - description of parameter
+   * @return {type} description of return value
+   */
   setupRoutes() {
     const middleware = this.middleware;
     const dbManager = middleware.getDatabaseManager();

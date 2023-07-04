@@ -1,14 +1,21 @@
-//working
+// This code is written in JavaScript
 
+/**
+ * Represents a database connection.
+ */
 class Database {
+  /**
+   * Creates a new instance of the Database class.
+   * @param {object} config - The configuration object for the database.
+   */
   constructor(config) {
+    // Initialize the connection and configuration properties
     this.connection = null;
     this.config = config;
   }
 
   /**
    * Opens a connection with the database.
-   *
    * @returns {Promise<Connection>} A promise that resolves to the opened connection.
    */
   connect() {
@@ -19,7 +26,6 @@ class Database {
 
   /**
    * Checks if a connection is open with the database.
-   *
    * @returns {Promise<boolean>} A promise that resolves to a boolean indicating if the connection is open.
    */
   checkConnection() {
@@ -36,7 +42,6 @@ class Database {
 
   /**
    * Gets the connection with the database.
-   *
    * @returns {Promise<Connection>} A promise that resolves to the connection.
    */
   getConnection() {
@@ -69,8 +74,7 @@ class Database {
 
   /**
    * Executes a query.
-   *
-   * @param {string} query - The query to execute.
+   * @param {string} queryString - The query to execute.
    * @returns {Promise<ResultSet>} A promise that resolves to the result set of the query.
    */
   query(queryString) {
@@ -81,8 +85,8 @@ class Database {
 
   /**
    * Updates records in the specified table that match the provided filter.
-   * @param {string} query - The query to execute.
-   * @returns {Promise} - A promise that resolves with the result of the update operation.
+   * @param {string} queryString - The query to execute.
+   * @returns {Promise} A promise that resolves with the result of the update operation.
    */
   update(queryString) {
     return new Promise(function (resolve, reject) {
@@ -92,8 +96,7 @@ class Database {
 
   /**
    * Deletes records from the specified table that match the provided filter.
-   *
-   * @returns {Promise} - A promise that resolves with the result of the delete operation.
+   * @returns {Promise} A promise that resolves with the result of the delete operation.
    */
   delete() {
     return new Promise(function (resolve, reject) {

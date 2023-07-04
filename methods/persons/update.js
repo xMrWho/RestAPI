@@ -5,6 +5,22 @@ const sqlOperationQuery = require("../mySqlOperationQuery");
 
 const ifPersonExists = require("./exists");
 
+/**
+ * Updates a person in the database.
+ *
+ * @param {object} database - The main database object.
+ * @param {string} usedDatabase - The name of the database being used (e.g. "MongoDB", "MySQL").
+ * @param {object} parameters - The parameters for updating the person.
+ * @param {string} parameters.id - The ID of the person to update.
+ * @param {string} [parameters.gender] - The gender of the person.
+ * @param {string} [parameters.lastname] - The last name of the person.
+ * @param {string} [parameters.middlename] - The middle name of the person.
+ * @param {string} [parameters.firstname] - The first name of the person.
+ * @param {string} [parameters.birthday] - The birthday of the person.
+ * @param {string} [parameters.deathday] - The death day of the person.
+ * @param {string} [parameters.information] - Additional information about the person.
+ * @return {Promise} A promise that resolves to an object with the updated person data or an error message.
+ */
 module.exports = function updatePerson(database, usedDatabase, parameters) {
   return new Promise(async function (resolve, reject) {
     if(!parameters.id) {
@@ -30,25 +46,6 @@ module.exports = function updatePerson(database, usedDatabase, parameters) {
       switch (usedDatabase) {
         //not tested
         case "MongoDB": {
-          /**           const db = database.getConnection();
-          const response = await db.collection("persons").updateOne(
-            {
-              id: ObjectId(parameters.id),
-            },
-            { $set: { parameters } }
-          );
-
-          if (response.error) {
-            resolve({
-              error: "Error retrieving data from database",
-              msg: response.error.message,
-              stack: response.error.stack,
-            });
-          }
-
-          resolve({
-            data: response,
-          }); */
           resolve({ error: "Not implemented yet" });
           break;
         }

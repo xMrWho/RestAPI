@@ -7,10 +7,21 @@ class RelationshipRouter {
     this.middleware = middleware;
   }
 
+  /**
+   * Returns the router.
+   *
+   * @return {Object} The router.
+   */
   getRouter() {
     return this.router;
   }
 
+  /**
+   * Set up the routes for the application.
+   *
+   * @param {type} paramName - description of parameter
+   * @return {type} description of return value
+   */
   setupRoutes() {
     const middleware = this.middleware;
     const dbManager = middleware.getDatabaseManager();

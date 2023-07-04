@@ -1,16 +1,15 @@
+require('../utils/arrayUtils');
+
+/**
+ * Retrieves relationships from a person in the database.
+ *
+ * @param {Object} database - The database object.
+ * @param {string} usedDatabase - The type of database used.
+ * @param {Object} parameters - The parameters for the query.
+ * @param {number} parameters.personId - The ID of the person.
+ * @return {Promise} A promise that resolves to an object with the queried relationships.
+ */
 module.exports = function getRelationshipsFromPerson(database, usedDatabase, parameters) {
-  Array.prototype.unique = function() {
-    var a = this.concat();
-    for(var i=0; i<a.length; ++i) {
-        for(var j=i+1; j<a.length; ++j) {
-            if(a[i] === a[j])
-                a.splice(j--, 1);
-        }
-    }
-
-    return a;
-};
-
   return new Promise(async function (resolve, reject) {
     try {
       switch (usedDatabase) {

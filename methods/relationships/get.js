@@ -1,29 +1,23 @@
-const mongoOperationQuery = require("../../PLANNED/DATABASE/mongoOperationQuery");
 const sqlOperationQuery = require("../mySqlOperationQuery");
+require('../utils/arrayUtils');
 
+/**
+ * Retrieves relationship data from the specified database based on the given parameters.
+ *
+ * @param {string} database - The name of the database to retrieve data from.
+ * @param {string} usedDatabase - The type of database being used (e.g. MongoDB, MySQL).
+ * @param {Object} parameters - The parameters used to query the relationships.
+ * @param {string} parameters.id - The ID of the relationship to retrieve (optional).
+ * @param {string} parameters.partner01 - The ID of the first partner in the relationship (optional).
+ * @param {string} parameters.partner02 - The ID of the second partner in the relationship (optional).
+ * @return {Promise} A promise that resolves to the retrieved relationship data.
+ */
 module.exports = function getRelationship(database, usedDatabase, parameters) {
   return new Promise(async function (resolve, reject) {
     try {
       switch (usedDatabase) {
         //not tested
         case "MongoDB": {
-          /**           const params = {
-            database: database,
-            collectionName: "relationships",
-            queryOperation: "findOne",
-            parametersToUse: { id: relationShipId },
-            errorMessage: "Error getting relationship with id " + relationShipId,
-            successMessage: "Successfully got person list",
-          };
-
-          const response = await mongoOperationQuery(params);
-          if (response.error) {
-            resolve(response);
-          }
-
-          resolve({
-            data: response,
-          }); */
           resolve({ error: "Not implemented yet" });
           break;
         }

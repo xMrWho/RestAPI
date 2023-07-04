@@ -1,8 +1,19 @@
-const mongoOperationQuery = require("../../PLANNED/DATABASE/mongoOperationQuery");
 const sqlOperationQuery = require("../mySqlOperationQuery");
 const ifRelationshipExists = require("./exists");
 
 module.exports = function addRelationship(database, usedDatabase, parameters) {
+/**
+ * Adds a relationship to the database.
+ *
+ * @param {string} database - The name of the database.
+ * @param {string} usedDatabase - The type of database being used (e.g., "MongoDB", "MySQL").
+ * @param {object} parameters - The parameters for the relationship.
+ * @param {string} parameters.person_id - The ID of the person.
+ * @param {string} parameters.partner_id - The ID of the partner.
+ * @param {string} parameters.relationship_type - The type of relationship (default: "Other").
+ * @param {string} parameters.information - Additional information (default: "").
+ * @return {Promise<Object>} A Promise that resolves to an object with the result of the operation.
+ */
   return new Promise(async function (resolve, reject) {
     const partner1 = parameters?.person_id;
     const partner2 = parameters?.partner_id;

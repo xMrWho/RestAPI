@@ -1,3 +1,14 @@
+/**
+ * Executes various operations based on the action specified in the request body.
+ *
+ * @param {Object} options - An object containing various parameters and dependencies.
+ * @param {Object} options.req - The request object.
+ * @param {Object} options.res - The response object.
+ * @param {Function} options.next - The next function.
+ * @param {Object} options.dbManager - The database manager object.
+ * @param {string} options.usedDatabase - The name of the used database.
+ * @return {Promise} A promise that resolves to the response from the executed operation.
+ */
 module.exports = async function postPersonFunctions(options) {
 
 const getPerson = require("../../methods/persons/get");
@@ -6,6 +17,7 @@ const addPerson = require("../../methods/persons/add");
 const getDescendantsFromPerson = require("../../methods/persons/getDescendants");
 const searchPerson = require("../../methods/persons/search");
 const updatePerson = require("../../methods/persons/update");
+const personExists = require("../../methods/persons/exists"); 
 
 
   const { req, res, next, dbManager, usedDatabase } = options;
@@ -15,6 +27,17 @@ const updatePerson = require("../../methods/persons/update");
       case "get_all": {
         const getAllResponse = await getPersonList(dbManager, usedDatabase);
         return res.status(200).send(getAllResponse);
+      }
+
+      case "exists": {
+        const id = req?.body?.params?.id;
+        if (id === undefined) {
+          return res
+            .status(400)
+            .send("Invalid request action missing parameter: params.id");
+        }
+        const existsResponse = await personExists(dbManager, usedDatabase, id);
+        return res.status(200).send(existsResponse);
       }
 
       //WORKING
@@ -140,8 +163,6 @@ const updatePerson = require("../../methods/persons/update");
         });
 
         console.log("searchResponse",searchResponse)
-
-
         return res.status(200).send(searchResponse);
 
       }
