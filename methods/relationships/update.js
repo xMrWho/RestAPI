@@ -1,5 +1,27 @@
-module.exports = function deleteRelationship(database, usedDatabase, parameters) {
+const ifRelationshipExists = require("./exists");
+
+module.exports = function updateRelationship(database, usedDatabase, parameters) {
     return new Promise(async function (resolve, reject) {
+      if(!parameters.id) {
+        resolve({
+          error: "Parameter id is missing",
+        });
+      }
+
+
+      const relationshipExists = await ifRelationshipExists(
+        database,
+        usedDatabase,
+        parameters.id
+      )
+
+      if (!relationshipExists) {
+        resolve({
+          error: "The relationship with the ID " + id + " does not exists!",
+        });
+      }
+
+
       try {
         switch (usedDatabase) {
           case "MongoDB": {
@@ -9,16 +31,21 @@ module.exports = function deleteRelationship(database, usedDatabase, parameters)
             const params = {
               database: database,
               collectionName: "relationships",
-              queryOperation: "delete",
+              queryOperation: "update",
               parametersToUse: {
-                id: personId,
+                id: parameters?.id,
+                person_id: parameters?.partner01,
+                partner_id: parameters?.partner02,
+                relationship_type: parameters?.relationship_type,
+                information: parameters?.information,
               },
-              errorMessage: "Error deleting the relationship",
+              errorMessage: "Error updating the person",
               successMessage: "Operation was successful",
             };
   
             const response = await sqlOperationQuery(params);
             if (response?.result) {
+              response.result.generatedPersonId = generatedUUID;
               resolve({
                 data: response,
               });

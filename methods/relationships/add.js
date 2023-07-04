@@ -9,6 +9,23 @@ module.exports = function addRelationship(database, usedDatabase, parameters) {
       const partner2 = parameters?.partner2; 
       const relationship_type = parameters?.relationship_type; 
       const information = parameters?.information;
+      const generatedUUID = uuid.v4();
+
+      const params = {
+        database: database,
+        collectionName: "persons",
+        queryOperation: "insert",
+        parametersToUse: {
+          id: generatedUUID,
+          person_id: parameters?.partner1,
+          partner_id: parameters?.partner2 || null,
+          relationship_type: parameters?.relationship_type || "Other",
+          information: parameters?.information || "",
+        },
+        errorMessage: "Error inserting the new relationship",
+        successMessage: "Operation was successful",
+      };
+
 
       try {
         switch (usedDatabase) {
@@ -16,7 +33,7 @@ module.exports = function addRelationship(database, usedDatabase, parameters) {
             resolve({ error: "Not implemented yet" });
           }
           case "MySQL": {
-            const generatedUUID = uuid.v4();
+            
             const existsRelationship = await ifRelationshipExists(
               database,
               usedDatabase,
@@ -34,6 +51,8 @@ module.exports = function addRelationship(database, usedDatabase, parameters) {
             }
 
 
+
+            
           }
           default: {
             resolve({ error: "Not implemented yet" });

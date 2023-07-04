@@ -35,7 +35,7 @@ module.exports = function addPerson(database, usedDatabase, parameters) {
           gender: parameters?.gender || "Other",
           birthday: parameters?.birthday,
           deathday: parameters?.deathday,
-          info: parameters?.info,
+          information: parameters?.information || "",
         },
         errorMessage: "Error inserting the new person",
         successMessage: "Operation was successful",

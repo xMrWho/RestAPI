@@ -30,6 +30,20 @@ const updatePerson = require("../../methods/persons/update");
         return res.status(200).send(getResponse);
       }
 
+      // to be implemented
+      case "get_descendants": {
+        const id = req?.body?.params?.id;
+        if (id === undefined) {
+          return res
+            .status(400)
+            .send("Invalid request action missing parameter: params.id");
+        }
+
+        const getResponse = await getDescendantsFromPerson(dbManager, usedDatabase, id);
+        return res.status(200).send(getResponse);
+
+      }
+
       //WORKING
       case "add": {
         // Check if the required parameters are present in the request body

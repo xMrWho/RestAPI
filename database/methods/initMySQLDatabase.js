@@ -1,6 +1,5 @@
 //this is working so far
 
-
 const createTablesArray = [
   // personsTable
   {
@@ -14,7 +13,7 @@ const createTablesArray = [
       " lastname VARCHAR(50) NOT NULL," +
       " birthday DATE," +
       " deathday DATE," +
-      " info TEXT," +
+      " information TEXT," +
       " PRIMARY KEY (id)) ENGINE = InnoDB;",
   },
   {
@@ -39,6 +38,8 @@ const createTablesArray = [
       " FOREIGN KEY (rel_id) REFERENCES relationships(id)," +
       " FOREIGN KEY (person_id) REFERENCES persons(id)) ENGINE = InnoDB;",
   },
+  /** TO BE IMPLEMENTED LATER */
+  /** 
   {
     tableName: "hobbies",
     sqlStatement:
@@ -133,7 +134,8 @@ const createTablesArray = [
       " PRIMARY KEY (id)," +
       " FOREIGN KEY (person_id) REFERENCES persons(id) ON DELETE CASCADE," +
       " FOREIGN KEY (animal_id) REFERENCES animals(id) ON DELETE CASCADE) ENGINE=InnoDB;",
-  },
+  }
+  */
 ];
 
 module.exports = function initMySQLDb(database) {

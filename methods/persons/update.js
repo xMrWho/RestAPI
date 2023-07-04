@@ -7,18 +7,19 @@ const ifPersonExists = require("./exists");
 
 module.exports = function updatePerson(database, usedDatabase, parameters) {
   return new Promise(async function (resolve, reject) {
+    if(!parameters.id) {
+      resolve({
+        error: "Parameter id is missing",
+      });
+    }
+
+
     try {
       const existsPerson = await ifPersonExists(
         database,
         usedDatabase,
-        generatedUUID
+        parameters?.id
       );
-
-      if (existsPerson) {
-        resolve({
-          error: "This Person already exists!",
-        });
-      }
 
       if (!existsPerson) {
         resolve({
@@ -66,7 +67,7 @@ module.exports = function updatePerson(database, usedDatabase, parameters) {
               gender: parameters?.gender,
               birthday: parameters?.birthday,
               deathday: parameters?.deathday,
-              info: parameters?.info,
+              information: parameters?.information,
             },
             errorMessage: "Error updating the person",
             successMessage: "Operation was successful",
