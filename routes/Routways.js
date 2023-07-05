@@ -18,49 +18,25 @@ class Routways {
   }
 
   /**
-   * Sets up the parent routes.
-   *
-   * @param {type} paramName - description of parameter
-   * @return {type} description of return value
-   */
-  setupChilrenRoutes() {
-    const childrenMiddleware = this.middleware;
-    const childrenRoutways = new childrenRoutes(childrenMiddleware);
-    childrenRoutways.setupRoutes();
-    // TODO: Replace the current route setup with the new code
-    this.router.use("/children", childrenRoutways.getRouter());
-  }
-
-  /**
-   * Sets up the relationship routes.
-   *
-   * @param {type} paramName - description of parameter
-   * @return {type} description of return value
-   */
-  setupRelationshipRoutes() {
-    const relationshipMiddleware = this.middleware;
-    const relationshipRoutways = new relationshipRoutes(relationshipMiddleware);
-    relationshipRoutways.setupRoutes();
-    this.router.use("/relationships", relationshipRoutways.getRouter());
-  }
-
-  setupPersonRoutes(){
-    const personsMiddleware = this.middleware;
-    const personsRoutways = new personsRoutes(personsMiddleware);
-    personsRoutes.setupRoutes();
-    this.router.use("/persons", personsRoutways.getRouter());
-  }
-
-  /**
    * Set up the routes for the application.
    *
    * @param {} - No parameters
    * @return {} - No return value
    */
   setupRoutes() {
-    setupChilrenRoutes();
-    setupRelationshipRoutes();
-    setupPersonRoutes();
+    const personsRoutways = new personsRoutes(this.middleware);
+    personsRoutes.setupRoutes();
+    this.router.use("/persons", personsRoutways.getRouter());
+
+    const relationshipRoutways = new relationshipRoutes(this.middleware);
+    relationshipRoutways.setupRoutes();
+    this.router.use("/relationships", relationshipRoutways.getRouter());
+
+    const childrenRoutways = new childrenRoutes(this.middleware);
+    childrenRoutways.setupRoutes();
+    // TODO: Replace the current route setup with the new code
+    this.router.use("/children", childrenRoutways.getRouter());
+    
     //PLANNED
     // this.router.use('/animals', this.middleware, animalsRoutes);
     // this.router.use('/cars', this.middleware, carsRoutes);

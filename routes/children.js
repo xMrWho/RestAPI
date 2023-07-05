@@ -39,4 +39,4 @@ class ChilrenRouter {
   }
 }
 
-module.exports = PersonRouter;
+module.exports = ChilrenRouter;
