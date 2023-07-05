@@ -1,5 +1,4 @@
 const getChild = require("../../methods/children/get");
-const getChildList = require("../../methods/children/getList");
 const addChild = require("../../methods/children/add");
 const deleteChild = require("../../methods/children/delete");
 const childExists = require("../../methods/children/exists");
