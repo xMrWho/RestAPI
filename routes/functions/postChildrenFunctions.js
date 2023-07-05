@@ -20,9 +20,13 @@ module.exports = async function postChildrenFunctions(options) {
       case "is_in_database": {
         const person_id = req?.body?.params?.person_id;
         if (person_id === undefined) {
-            return res.sendError(404, "Missing parameter person_id");
+          return res.sendError(404, "Missing parameter person_id");
         }
-        const isInDatabaseResponse = await isInDatabase(dbManager, usedDatabase, person_id);
+        const isInDatabaseResponse = await isInDatabase(
+          dbManager,
+          usedDatabase,
+          person_id
+        );
         return res.status(200).send(isInDatabaseResponse);
       }
       case "add": {
