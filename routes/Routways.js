@@ -25,7 +25,7 @@ class Routways {
    */
   setupRoutes() {
     const personsRoutways = new personsRoutes(this.middleware);
-    personsRoutes.setupRoutes();
+    personsRoutways.setupRoutes();
     this.router.use("/persons", personsRoutways.getRouter());
 
     const relationshipRoutways = new relationshipRoutes(this.middleware);
