@@ -1,6 +1,7 @@
 // Import the route handlers
 const personsRoutes = require("./persons.js");
 const relationshipRoutes = require("./relationships.js");
+const childrenRoutes = require("./")
 
 //PLANNED
 //const animalsRoutes = require('./animals.js');
@@ -43,6 +44,10 @@ class Routways {
     this.router.use("/relationships", relationshipRoutways.getRouter());
   }
 
+  setupPersonRoutes(){
+
+  }
+
   /**
    * Set up the routes for the application.
    *
@@ -50,8 +55,9 @@ class Routways {
    * @return {} - No return value
    */
   setupRoutes() {
-    setupParentRoutes();
+    setupChilrenRoutes();
     setupRelationshipRoutes();
+    setupPersonRoutes();
     //PLANNED
     // this.router.use('/animals', this.middleware, animalsRoutes);
     // this.router.use('/cars', this.middleware, carsRoutes);
