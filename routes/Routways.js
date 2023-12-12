@@ -1,7 +1,7 @@
 // Import the route handlers
 const personsRoutes = require("./persons.js");
 const relationshipRoutes = require("./relationships.js");
-const childrenRoutes = require("./children.js")
+const childrenRoutes = require("./children.js");
 
 //PLANNED
 //const animalsRoutes = require('./animals.js');
@@ -45,7 +45,9 @@ class Routways {
 
     this.router.get("/", function callback(req, res, next) {
       res.status(200);
-      res.send({ message: "" });
+      res.send(
+        "<html> <body><h1>Annemarie fetzt!</h1><p>Text</p> </body></html>"
+        )
     });
 
     this.router.get("*", function callback(req, res, next) {
